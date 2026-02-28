@@ -343,9 +343,9 @@ GitHub Repository: (Add repo link here)
 
 | Member Name | Role | Responsibilities |
 |-------------|------|-----------------|
-| (Name) | Backend Developer | API & Database |
-| (Name) | Frontend Developer | UI & Dashboard |
-| (Name) | AI Engineer | OCR + Gemini Integration |
+| (Anuj) | Backend Developer | API & Database |
+| (Ananya) | Frontend Developer | UI & Dashboard |
+| (Manmath) | AI Engineer | OCR + Gemini Integration |
 
 ---
 
