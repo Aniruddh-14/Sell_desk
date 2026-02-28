@@ -34,10 +34,12 @@ def _get_client():
         return None
 
 
-def insert_invoice(data: dict) -> dict:
+def insert_invoice(data: dict, user_id: str = None) -> dict:
     """Insert an invoice record."""
     import uuid
     client = _get_client()
+    if user_id:
+        data["user_id"] = user_id
     if _use_local or client is None:
         record = {**data, "id": str(uuid.uuid4())}
         _local_invoices.append(record)
@@ -46,10 +48,13 @@ def insert_invoice(data: dict) -> dict:
     return result.data[0] if result.data else data
 
 
-def insert_products(products: list[dict]) -> list[dict]:
+def insert_products(products: list[dict], user_id: str = None) -> list[dict]:
     """Insert multiple product records."""
     import uuid
     client = _get_client()
+    if user_id:
+        for p in products:
+            p["user_id"] = user_id
     if _use_local or client is None:
         records = []
         for p in products:
@@ -61,27 +66,37 @@ def insert_products(products: list[dict]) -> list[dict]:
     return result.data if result.data else products
 
 
-def get_all_products() -> list[dict]:
+def get_all_products(user_id: str = None) -> list[dict]:
     """Get all products."""
     client = _get_client()
     if _use_local or client is None:
+        if user_id:
+            return [p for p in _local_products if p.get("user_id") == user_id]
         return _local_products
-    result = client.table("products").select("*").order("created_at", desc=True).execute()
+    query = client.table("products").select("*")
+    if user_id:
+        query = query.eq("user_id", user_id)
+    result = query.order("created_at", desc=True).execute()
     return result.data if result.data else []
 
 
-def get_all_invoices() -> list[dict]:
+def get_all_invoices(user_id: str = None) -> list[dict]:
     """Get all invoices."""
     client = _get_client()
     if _use_local or client is None:
+        if user_id:
+            return [i for i in _local_invoices if i.get("user_id") == user_id]
         return _local_invoices
-    result = client.table("invoices").select("*").order("upload_date", desc=True).execute()
+    query = client.table("invoices").select("*")
+    if user_id:
+        query = query.eq("user_id", user_id)
+    result = query.order("upload_date", desc=True).execute()
     return result.data if result.data else []
 
 
-def get_dashboard_data() -> dict:
+def get_dashboard_data(user_id: str = None) -> dict:
     """Compute dashboard analytics from product data."""
-    products = get_all_products()
+    products = get_all_products(user_id=user_id)
     if not products:
         return {
             "total_products": 0,
@@ -182,9 +197,9 @@ def get_dashboard_data() -> dict:
     }
 
 
-def seed_demo_data():
+def seed_demo_data(user_id: str = None):
     """Seed demo data for hackathon demo if database is empty."""
-    if get_all_products():
+    if get_all_products(user_id=user_id):
         return  # Already has data
 
     demo_products = [
@@ -217,7 +232,7 @@ def seed_demo_data():
         "upload_date": datetime.datetime.now().isoformat(),
         "raw_ocr_text": "Demo data — seeded for hackathon presentation",
         "supplier": "Multiple Suppliers",
-    })
+    }, user_id=user_id)
 
     import random
     from datetime import timedelta
@@ -229,5 +244,5 @@ def seed_demo_data():
         random_days = random.randint(0, 180)
         p["created_at"] = (now - timedelta(days=random_days)).isoformat()
 
-    insert_products(demo_products)
-    print(f"✅ Seeded {len(demo_products)} demo products")
+    insert_products(demo_products, user_id=user_id)
+    print(f"✅ Seeded {len(demo_products)} demo products for user_id {user_id}")
