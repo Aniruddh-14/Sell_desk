@@ -19,7 +19,6 @@ from database import (
     get_all_invoices, get_dashboard_data, seed_demo_data
 )
 from ocr import extract_products_from_image_gemini, encode_image_bytes
-from ocr import extract_products_from_image_gemini, encode_image_bytes
 from gemini_insights import generate_insights
 from reports import generate_itr_report
 from auth_utils import get_current_user
@@ -85,47 +84,59 @@ async def upload_invoice(
 
     # Use Gemini Vision to read the invoice directly
     print(f"🔄 Using Gemini Vision to read the invoice ({ext}) directly")
-    raw_text, products = extract_products_from_image_gemini(doc_b64, mime_type)
+    try:
+        raw_text, products = extract_products_from_image_gemini(doc_b64, mime_type)
+    except Exception as ocr_err:
+        print(f"⚠️ OCR failed: {ocr_err}")
+        raise HTTPException(500, f"OCR extraction failed: {str(ocr_err)}")
 
-    if not products:
-        raw_text = raw_text or "No text could be extracted from this image."
-        # Still save the invoice record even with no products
+    # Try to save the extracted data
+    try:
+        if not products:
+            raw_text = raw_text or "No text could be extracted from this image."
+            # Still save the invoice record even with no products
+            invoice = insert_invoice({
+                "filename": file.filename,
+                "upload_date": datetime.datetime.now().isoformat(),
+                "raw_ocr_text": raw_text,
+                "supplier": "Unknown",
+            }, user_id=user_id)
+            return UploadResponse(
+                invoice_id=invoice["id"],
+                filename=file.filename,
+                products_extracted=0,
+                products=[],
+                raw_text=raw_text,
+            )
+
+        # Store invoice
         invoice = insert_invoice({
             "filename": file.filename,
             "upload_date": datetime.datetime.now().isoformat(),
             "raw_ocr_text": raw_text,
-            "supplier": "Unknown",
+            "supplier": products[0].get("supplier", "Unknown") if products else "Unknown",
         }, user_id=user_id)
+
+        # Store products
+        for p in products:
+            p["invoice_id"] = invoice["id"]
+            p["created_at"] = datetime.datetime.now().isoformat()
+
+        insert_products(products, user_id=user_id)
+
         return UploadResponse(
             invoice_id=invoice["id"],
             filename=file.filename,
-            products_extracted=0,
-            products=[],
+            products_extracted=len(products),
+            products=[ProductBase(**p) for p in products],
             raw_text=raw_text,
         )
-
-    # Store invoice
-    invoice = insert_invoice({
-        "filename": file.filename,
-        "upload_date": datetime.datetime.now().isoformat(),
-        "raw_ocr_text": raw_text,
-        "supplier": products[0].get("supplier", "Unknown") if products else "Unknown",
-    }, user_id=user_id)
-
-    # Store products
-    for p in products:
-        p["invoice_id"] = invoice["id"]
-        p["created_at"] = datetime.datetime.now().isoformat()
-
-    insert_products(products, user_id=user_id)
-
-    return UploadResponse(
-        invoice_id=invoice["id"],
-        filename=file.filename,
-        products_extracted=len(products),
-        products=[ProductBase(**p) for p in products],
-        raw_text=raw_text,
-    )
+    except Exception as db_err:
+        error_msg = str(db_err)
+        print(f"⚠️ Database error during upload: {error_msg}")
+        if "row-level security" in error_msg.lower() or "42501" in error_msg:
+            raise HTTPException(500, "Database security policy error. Please run the updated supabase_schema.sql in your Supabase SQL Editor.")
+        raise HTTPException(500, f"Failed to save data: {error_msg}")
 
 
 # ──────────────────────────────────────────────

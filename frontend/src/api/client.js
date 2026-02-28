@@ -10,8 +10,12 @@ const api = axios.create({
 
 api.interceptors.request.use(async (config) => {
     const { data: { session } } = await supabase.auth.getSession();
+    console.log('🔑 Auth interceptor — session:', session ? 'EXISTS' : 'NULL');
     if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
+        console.log('🔑 Token attached, sub:', JSON.parse(atob(session.access_token.split('.')[1])).sub);
+    } else {
+        console.warn('⚠️ No access_token found in session!');
     }
     return config;
 });
