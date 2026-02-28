@@ -103,7 +103,7 @@ FinSight OCR uses an **Asynchronous Processing Architecture**. While the heavy O
 
 ---
 
-## ER Diagram 
+## 9.ER Diagram 
 **link** https://drive.google.com/file/d/1aFRv7eaUjGaM8Sr5c264G744x-1Pqy19/view?usp=sharing
 
 
