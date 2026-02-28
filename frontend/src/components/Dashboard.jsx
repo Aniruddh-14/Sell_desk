@@ -9,8 +9,8 @@ import { getDashboard } from '../api/client';
 import ScrollReveal from './effects/ScrollReveal';
 
 const COLORS = [
-    '#6366f1', '#14b8a6', '#f97316', '#f43f5e',
-    '#8b5cf6', '#10b981', '#0ea5e9', '#f59e0b',
+    '#D4AF37', '#14b8a6', '#f97316', '#f43f5e',
+    '#FFDF00', '#10b981', '#0ea5e9', '#f59e0b',
 ];
 
 const chartTooltipStyle = {
@@ -28,7 +28,7 @@ const STAT_CONFIG = [
         key: 'total_products',
         label: 'Total Products',
         Icon: Package,
-        iconColor: '#6366f1',
+        iconColor: '#D4AF37',
         iconBg: 'rgba(99,102,241,0.13)',
         formatter: (v) => Math.round(v).toLocaleString('en-IN'),
     },

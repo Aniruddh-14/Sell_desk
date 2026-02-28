@@ -43,7 +43,7 @@ export default function Auth() {
             >
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <div style={{
-                        width: '48px', height: '48px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        width: '48px', height: '48px', background: 'linear-gradient(135deg, #D4AF37, #FFDF00)',
                         borderRadius: '12px', margin: '0 auto 1rem', display: 'flex',
                         alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 8px 16px rgba(99,102,241,0.3)'
@@ -113,7 +113,7 @@ export default function Auth() {
                         disabled={loading}
                         style={{
                             width: '100%', padding: '0.875rem', marginTop: '0.5rem',
-                            background: 'linear-gradient(to right, #6366f1, #8b5cf6)',
+                            background: 'linear-gradient(to right, #D4AF37, #FFDF00)',
                             border: 'none', borderRadius: '8px', color: 'white',
                             fontSize: '1rem', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer',
                             opacity: loading ? 0.7 : 1, transition: 'opacity 0.2s, transform 0.1s'

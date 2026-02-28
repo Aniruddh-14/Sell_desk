@@ -5,7 +5,7 @@ const STATUS_CONFIG = {
     matched: { color: '#22c55e', bg: 'rgba(34,197,94,0.12)', icon: '✅', label: 'Matched' },
     mismatched: { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', icon: '⚠️', label: 'Mismatched' },
     missing_invoice: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', icon: '📄', label: 'Missing Invoice' },
-    missing_payment: { color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)', icon: '💰', label: 'Missing Payment' },
+    missing_payment: { color: '#E6C200', bg: 'rgba(230,194,0,0.12)', icon: '💰', label: 'Missing Payment' },
     duplicate: { color: '#f97316', bg: 'rgba(249,115,22,0.12)', icon: '🔁', label: 'Duplicate' },
 };
 
@@ -77,7 +77,7 @@ export default function ReconciliationPage() {
                         htmlFor="payment-csv"
                         style={{
                             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                            padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #D4AF37, #FFDF00)',
                             borderRadius: '10px', color: 'white', fontWeight: '600', cursor: 'pointer',
                             fontSize: '0.9rem', transition: 'opacity 0.2s',
                             opacity: uploading ? 0.6 : 1,
@@ -127,8 +127,8 @@ export default function ReconciliationPage() {
                 <>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
                         {[
-                            { label: 'Invoices', value: report.total_invoices, icon: '📄', color: '#6366f1' },
-                            { label: 'Payments', value: report.total_payments, icon: '💳', color: '#8b5cf6' },
+                            { label: 'Invoices', value: report.total_invoices, icon: '📄', color: '#D4AF37' },
+                            { label: 'Payments', value: report.total_payments, icon: '💳', color: '#FFDF00' },
                             { label: 'Matched', value: report.matched, icon: '✅', color: '#22c55e' },
                             { label: 'Mismatched', value: report.mismatched, icon: '⚠️', color: '#f59e0b' },
                             { label: 'Missing Inv.', value: report.missing_invoices, icon: '📄', color: '#ef4444' },
@@ -147,11 +147,11 @@ export default function ReconciliationPage() {
                         <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem' }}>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Invoice Amount</div>
-                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#6366f1' }}>₹{report.total_invoice_amount?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#D4AF37' }}>₹{report.total_invoice_amount?.toLocaleString()}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Payment Expected</div>
-                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#8b5cf6' }}>₹{report.total_payment_amount?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FFDF00' }}>₹{report.total_payment_amount?.toLocaleString()}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Discrepancy</div>
