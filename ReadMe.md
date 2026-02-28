@@ -108,6 +108,3 @@ FinSight OCR uses an **Asynchronous Processing Architecture**. While the heavy O
 * **Multi-Store Sync:** Manage 5 stores from a single dashboard.
 * **Direct Supplier Chat:** AI-drafted emails to negotiate prices when a hike is detected.
 
----
-
-**Developed for [Hackathon Name] 2026 by [Your Team Name]**
