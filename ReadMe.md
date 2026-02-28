@@ -81,7 +81,7 @@ FinSight OCR uses an **Asynchronous Processing Architecture**. While the heavy O
 | Component | Model | Why? |
 | :--- | :--- | :--- |
 | **OCR** | **Nanonets-OCR2-3B** | Best-in-class for structured document extraction at low latency. |
-| **Insights** | **Gemini 1.5 Flash** | Optimized for speed and large context windows; perfect for comparing months of sales data. |
+| **Insights** | **Gemini 2.5 Flash** | Optimized for speed and large context windows; perfect for comparing months of sales data. |
 
 ---
 
