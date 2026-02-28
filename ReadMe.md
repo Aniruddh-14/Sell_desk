@@ -325,7 +325,7 @@ Generate GST-ready report
 
 Live Demo Link: (Add link here)  
 Demo Video Link: (Add link here)  
-GitHub Repository: (Add repo link here)
+GitHub Repository: https://github.com/ananyapandey9895/FinSight-OCR
 
 ---
 
