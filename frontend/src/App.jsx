@@ -7,6 +7,7 @@ import InsightsPanel from './components/InsightsPanel';
 import CompareBills from './components/CompareBills';
 import GenerateInvoice from './components/GenerateInvoice';
 import ReportsITR from './components/ReportsITR';
+import ReconciliationPage from './components/ReconciliationPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Auth from './components/Auth';
 
@@ -31,6 +32,8 @@ function MainApp() {
                 return <CompareBills />;
             case 'generate':
                 return <GenerateInvoice />;
+            case 'reconciliation':
+                return <ReconciliationPage />;
             case 'insights':
                 return <InsightsPanel />;
             case 'reports':

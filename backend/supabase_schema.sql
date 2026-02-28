@@ -77,4 +77,22 @@ CREATE POLICY "products_delete" ON public.products FOR DELETE USING (true);
 -- Every endpoint requires a valid Supabase JWT (via auth_utils.py).
 -- The backend extracts user_id from the token and filters all queries by user_id.
 -- RLS policies here are permissive to allow the backend (using the anon key) to operate.
--- If you switch to a service_role key, you can make these policies stricter.
+
+-- 5. Payment Records Table (for Reconciliation)
+CREATE TABLE IF NOT EXISTS public.payment_records (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id),
+    vendor TEXT NOT NULL,
+    expected_amount NUMERIC(12, 2) NOT NULL,
+    payment_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    reference_number TEXT,
+    status TEXT DEFAULT 'pending',
+    matched_invoice_id UUID REFERENCES public.invoices(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.payment_records ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "payment_records_select" ON public.payment_records FOR SELECT USING (true);
+CREATE POLICY "payment_records_insert" ON public.payment_records FOR INSERT WITH CHECK (true);
+CREATE POLICY "payment_records_update" ON public.payment_records FOR UPDATE USING (true);
+CREATE POLICY "payment_records_delete" ON public.payment_records FOR DELETE USING (true);

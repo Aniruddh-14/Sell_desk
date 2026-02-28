@@ -66,4 +66,23 @@ export async function exportCSV() {
     window.URL.revokeObjectURL(url);
 }
 
+export async function uploadPaymentRecords(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await api.post('/payment-records', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+}
+
+export async function getPaymentRecords() {
+    const res = await api.get('/payment-records');
+    return res.data;
+}
+
+export async function runReconciliation() {
+    const res = await api.post('/reconcile');
+    return res.data;
+}
+
 export default api;

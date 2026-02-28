@@ -243,6 +243,65 @@ async def get_itr_endpoint(user_id: str = Depends(get_current_user)):
     """Get ITR and financial summary report."""
     return generate_itr_report(user_id=user_id)
 
+# ──────────────────────────────────────────────
+# Reconciliation
+# ──────────────────────────────────────────────
+
+@app.post("/api/payment-records")
+async def upload_payment_records(
+    file: UploadFile = File(None),
+    user_id: str = Depends(get_current_user)
+):
+    """Upload payment records from a CSV file or accept JSON body."""
+    from database import insert_payment_records
+    import csv as csv_mod
+
+    if file and file.filename:
+        # Parse CSV
+        contents = await file.read()
+        text = contents.decode("utf-8")
+        reader = csv_mod.DictReader(text.strip().splitlines())
+        records = []
+        for row in reader:
+            records.append({
+                "vendor": row.get("vendor", row.get("Vendor", "")),
+                "expected_amount": float(row.get("expected_amount", row.get("Amount", row.get("amount", 0)))),
+                "payment_date": row.get("payment_date", row.get("Date", row.get("date", ""))),
+                "reference_number": row.get("reference_number", row.get("Reference", row.get("ref", ""))),
+                "status": "pending",
+            })
+        if not records:
+            raise HTTPException(400, "No valid records found in CSV")
+        result = insert_payment_records(records, user_id=user_id)
+        return {"message": f"Uploaded {len(result)} payment records", "count": len(result), "records": result}
+    
+    raise HTTPException(400, "Please upload a CSV file with payment records")
+
+
+@app.get("/api/payment-records")
+async def list_payment_records(user_id: str = Depends(get_current_user)):
+    """List all payment records."""
+    from database import get_payment_records
+    try:
+        records = get_payment_records(user_id=user_id)
+        return {"records": records, "total": len(records)}
+    except Exception as e:
+        if "PGRST205" in str(e) or "payment_records" in str(e):
+            return {"records": [], "total": 0, "note": "Run supabase_schema.sql to create the payment_records table"}
+        raise HTTPException(500, str(e))
+
+
+@app.post("/api/reconcile")
+async def reconcile(user_id: str = Depends(get_current_user)):
+    """Run reconciliation between invoices and payment records."""
+    from reconciliation import run_reconciliation
+    try:
+        report = run_reconciliation(user_id=user_id)
+        return report
+    except Exception as e:
+        print(f"Reconciliation error: {e}")
+        raise HTTPException(500, f"Reconciliation failed: {str(e)}")
+
 
 # ──────────────────────────────────────────────
 # Health

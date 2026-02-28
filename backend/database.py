@@ -246,3 +246,69 @@ def seed_demo_data(user_id: str = None):
 
     insert_products(demo_products, user_id=user_id)
     print(f"✅ Seeded {len(demo_products)} demo products for user_id {user_id}")
+
+
+# ──────────────────────────────────────────────
+# Payment Records (Reconciliation)
+# ──────────────────────────────────────────────
+
+_local_payment_records: list[dict] = []
+
+
+def insert_payment_records(records: list[dict], user_id: str = None) -> list[dict]:
+    """Insert multiple payment records."""
+    import uuid
+    client = _get_client()
+    if user_id:
+        for r in records:
+            r["user_id"] = user_id
+    if _use_local or client is None:
+        result = []
+        for r in records:
+            record = {**r, "id": str(uuid.uuid4())}
+            _local_payment_records.append(record)
+            result.append(record)
+        return result
+    result = client.table("payment_records").insert(records).execute()
+    return result.data if result.data else records
+
+
+def get_payment_records(user_id: str = None) -> list[dict]:
+    """Get all payment records."""
+    client = _get_client()
+    if _use_local or client is None:
+        if user_id:
+            return [r for r in _local_payment_records if r.get("user_id") == user_id]
+        return _local_payment_records
+    query = client.table("payment_records").select("*")
+    if user_id:
+        query = query.eq("user_id", user_id)
+    result = query.order("created_at", desc=True).execute()
+    return result.data if result.data else []
+
+
+def update_payment_record(record_id: str, data: dict) -> dict:
+    """Update a payment record."""
+    client = _get_client()
+    if _use_local or client is None:
+        for r in _local_payment_records:
+            if r.get("id") == record_id:
+                r.update(data)
+                return r
+        return data
+    result = client.table("payment_records").update(data).eq("id", record_id).execute()
+    return result.data[0] if result.data else data
+
+
+def delete_payment_record(record_id: str, user_id: str = None) -> bool:
+    """Delete a payment record."""
+    client = _get_client()
+    if _use_local or client is None:
+        global _local_payment_records
+        _local_payment_records = [r for r in _local_payment_records if r.get("id") != record_id]
+        return True
+    query = client.table("payment_records").delete().eq("id", record_id)
+    if user_id:
+        query = query.eq("user_id", user_id)
+    query.execute()
+    return True
