@@ -6,6 +6,8 @@ const navItems = [
     { id: 'data', label: 'Product Data' },
     { id: 'compare', label: 'Compare Bills' },
     { id: 'generate', label: 'Generate Bill' },
+    { id: 'reconciliation', label: 'Reconciliation' },
+    { id: 'calendar', label: 'Sales Calendar' },
     { id: 'insights', label: 'AI Insights' },
     { id: 'reports', label: 'Reports & ITR' },
 ];
