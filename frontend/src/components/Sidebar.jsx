@@ -14,7 +14,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
     return (
         <aside className="sidebar">
             <div className="sidebar-logo">
-                <h1>✦ RetailIQ</h1>
+                <h1>✦ FinSight-OCR</h1>
                 <p>Smart Store Analytics</p>
             </div>
 
