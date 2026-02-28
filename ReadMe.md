@@ -177,7 +177,7 @@ This enables:
 - GST reporting  
 - Profit calculations  
 
-(Add ER diagram image here)
+([Added ER diagram image here](https://drive.google.com/file/d/1aFRv7eaUjGaM8Sr5c264G744x-1Pqy19/view?usp=sharing))
 
 ---
 
