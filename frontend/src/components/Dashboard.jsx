@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, animate, useInView } from 'framer-motion';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer, PieChart, Pie, Cell,
+    ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend
 } from 'recharts';
 import { Package, IndianRupee, TrendingUp, Users } from 'lucide-react';
 import { getDashboard } from '../api/client';
@@ -206,6 +206,27 @@ export default function Dashboard() {
             ════════════════════════════════ */}
             <div className="charts-grid">
                 <ScrollReveal direction="up" delay={0}>
+                    <div className="glass-card chart-card" style={{ gridColumn: '1 / -1' }}>
+                        <h3>
+                            <span className="chart-dot" style={{ background: '#0ea5e9' }} />
+                            Sales & Products Timeline
+                        </h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={data.monthly_sales} margin={{ left: 20, right: 20, top: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis yAxisId="left" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                                <YAxis yAxisId="right" orientation="right" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                <Line yAxisId="left" type="monotone" dataKey="revenue" name="Revenue" stroke="#0ea5e9" strokeWidth={3} activeDot={{ r: 8 }} />
+                                <Line yAxisId="right" type="monotone" dataKey="products" name="Products Sold" stroke="#f97316" strokeWidth={3} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </ScrollReveal>
+
+                <ScrollReveal direction="up" delay={0.1}>
                     <div className="glass-card chart-card">
                         <h3>
                             <span className="chart-dot" style={{ background: '#10b981' }} />
