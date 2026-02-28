@@ -1,13 +1,13 @@
-# 🚀 FinSight OCR
+#  FinSight OCR
 
 > Transforming static invoices into strategic retail intelligence.
 
 ---
 
-## 📌 Project Title  
+##  Project Title  
 **FinSight OCR – AI-Powered Retail Intelligence System**
 
-## 📝 One-line Project Description  
+##  One-line Project Description  
 An AI-driven SaaS platform that converts invoice images into structured data and actionable retail business intelligence.
 
 ---
@@ -77,43 +77,43 @@ FinSight OCR is a full-stack AI retail assistant that automates invoice processi
 
 ## Key Features  
 
-### 🏠 Smart Dashboard  
+###  Smart Dashboard  
 - Revenue overview  
 - Expense tracking  
 - Profit estimation  
 - AI-generated strategic memo  
 - Festival demand alerts  
 
-### 🏢 Suppliers Module  
+### Suppliers Module  
 - Supplier database  
 - Historical price tracking  
 - Automatic price hike detection  
 
-### 📦 Items Module  
+###  Items Module  
 - Inventory tracking  
 - Margin analysis  
 - Fast/Slow moving product detection  
 
-### 📊 Sales Module  
+### Sales Module  
 - Daily & monthly analytics  
 - Revenue trends  
 - Buying behavior insights  
 
-### 🧾 Purchases Module  
+### Purchases Module  
 - OCR-based invoice upload  
 - Purchase history analysis  
 
-### 💰 Expenses Module  
+### Expenses Module  
 - Operational expense management  
 - Category-wise breakdown  
 
-### 📈 Reports (Data Analyst Layer)  
+### Reports (Data Analyst Layer)  
 - Sales & purchase trends  
 - Seasonal forecasting  
 - Profit & Loss reports  
 - Buy/Avoid recommendations  
 
-### 🧮 GST & ITR Reports  
+### GST & ITR Reports  
 - GST-ready exports  
 - Tax summary reports  
 - Accountant-friendly CSV/PDF generation  
