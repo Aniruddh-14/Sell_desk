@@ -103,7 +103,11 @@ FinSight OCR uses an **Asynchronous Processing Architecture**. While the heavy O
 
 ---
 
-## 9. Future Scope
+## ER Diagram 
+**link** https://drive.google.com/file/d/1aFRv7eaUjGaM8Sr5c264G744x-1Pqy19/view?usp=sharing
+
+
+## 10. Future Scope
 * **Voice Commands:** "FinSight, how much did I spend on milk this month?"
 * **Multi-Store Sync:** Manage 5 stores from a single dashboard.
 * **Direct Supplier Chat:** AI-drafted emails to negotiate prices when a hike is detected.
