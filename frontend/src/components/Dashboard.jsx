@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, PieChart, Pie, Cell, Legend,
+    LineChart, Line
 } from 'recharts';
 import { getDashboard } from '../api/client';
 
@@ -85,6 +86,26 @@ export default function Dashboard() {
 
             {/* Charts */}
             <div className="charts-grid">
+                {/* Monthly Sales Timeline */}
+                <div className="glass-card chart-card animate-in" style={{ gridColumn: '1 / -1' }}>
+                    <h3>
+                        <span className="chart-dot" style={{ background: '#0ea5e9' }} />
+                        Sales & Products Timeline
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={data.monthly_sales} margin={{ left: 20, right: 20, top: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                            <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                            <YAxis yAxisId="left" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                            <YAxis yAxisId="right" orientation="right" tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                            <Tooltip contentStyle={chartTooltipStyle} />
+                            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                            <Line yAxisId="left" type="monotone" dataKey="revenue" name="Revenue" stroke="#0ea5e9" strokeWidth={3} activeDot={{ r: 8 }} />
+                            <Line yAxisId="right" type="monotone" dataKey="products" name="Products Sold" stroke="#f97316" strokeWidth={3} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+
                 {/* Top Selling Products */}
                 <div className="glass-card chart-card animate-in">
                     <h3>

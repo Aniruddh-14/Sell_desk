@@ -1,119 +1,112 @@
 """Gemini API integration for retail business insights."""
 import os
 import json
+import asyncio
+from typing import List, Optional
+from pydantic import BaseModel
+from pydantic_ai import Agent
+from pydantic_ai.models.groq import GroqModel
 from dotenv import load_dotenv
+
+from agents import analyst_agent, tax_agent, groq_model
+from tools import fetch_inventory_data
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+# Define the expected JSON shape from the final orchestrator
+class RetailInsightsSchema(BaseModel):
+    stock_more: List[str]
+    products_to_avoid: List[str]
+    festival_recommendations: List[str]
+    general_insights: List[str]
 
+# Create the Swarm Orchestrator Agent
+orchestrator = Agent(
+    model=groq_model,
+    system_prompt=(
+        "You are the Lead Insights Orchestrator for RetailIQ. "
+        "Your job is to read the inputs from the specialized agents (Analyst & Tax) "
+        "and combine them into a single, perfectly structured JSON response."
+        "You MUST output raw JSON matching this schema:\n"
+        "{\n"
+        '  "stock_more": ["str"],\n'
+        '  "products_to_avoid": ["str"],\n'
+        '  "festival_recommendations": ["str"],\n'
+        '  "general_insights": ["str"]\n'
+        "}\n"
+        "Do NOT include markdown formatting or ANY other text, just the raw JSON."
+    )
+)
 
 def generate_insights(products: list[dict], context: str = None, festival: str = None) -> dict:
-    """Generate business insights using Google Gemini API."""
-
-    # Build product summary for the prompt
+    """Generate business insights using a Multi-Agent Swarm."""
     if not products:
         return _get_demo_insights()
 
-    product_summary = _build_product_summary(products)
-    prompt = _build_prompt(product_summary, context, festival)
-
-    # Try Gemini API
-    if GEMINI_API_KEY and GEMINI_API_KEY != "your-gemini-api-key":
-        try:
-            return _call_gemini(prompt)
-        except Exception as e:
-            print(f"⚠️  Gemini API failed: {e} — using demo insights")
-
-    return _get_demo_insights()
-
-
-def _build_product_summary(products: list[dict]) -> str:
-    """Build a text summary of product data."""
-    lines = ["Product Inventory Summary:", ""]
-
-    # Aggregate by product
-    product_map: dict = {}
-    for p in products:
-        name = p.get("product_name", "Unknown")
-        if name not in product_map:
-            product_map[name] = {"qty": 0, "price": 0, "supplier": p.get("supplier", ""), "category": p.get("category", "")}
-        product_map[name]["qty"] += int(p.get("quantity", 0))
-        product_map[name]["price"] = float(p.get("price", 0))
-
-    for name, data in sorted(product_map.items(), key=lambda x: x[1]["qty"], reverse=True):
-        revenue = data["qty"] * data["price"]
-        lines.append(f"- {name}: Qty={data['qty']}, Price=₹{data['price']}, Revenue=₹{revenue:.0f}, Supplier={data['supplier']}, Category={data['category']}")
-
-    # Summary stats
-    total_revenue = sum(d["qty"] * d["price"] for d in product_map.values())
-    lines.append(f"\nTotal Products: {len(product_map)}")
-    lines.append(f"Total Revenue: ₹{total_revenue:,.0f}")
-    lines.append(f"Suppliers: {', '.join(set(p.get('supplier', '') for p in products))}")
-
-    return "\n".join(lines)
-
-
-def _build_prompt(product_summary: str, context: str = None, festival: str = None) -> str:
-    """Build the prompt for Gemini."""
-    prompt = f"""You are a retail business analytics expert helping a small Indian shop owner make data-driven decisions.
-
-Analyze the following product inventory data and provide actionable insights:
-
-{product_summary}
-
-Please provide your analysis in the following JSON format:
-{{
-  "stock_more": ["Product 1 — reason", "Product 2 — reason"],
-  "products_to_avoid": ["Product 1 — reason", "Product 2 — reason"],
-  "festival_recommendations": ["Recommendation 1", "Recommendation 2"],
-  "general_insights": ["Insight 1", "Insight 2", "Insight 3"]
-}}
-
-Focus on:
-1. **Products to stock more**: High-demand items that generate good revenue
-2. **Products to avoid**: Slow-moving items with low margins or excessive stock
-3. **Festival-specific recommendations**: What to stock for upcoming Indian festivals
-4. **General business insights**: Pricing strategies, supplier diversification, category optimization
-"""
-
-    if context:
-        prompt += f"\nAdditional context from the shop owner: {context}"
-
-    if festival:
-        prompt += f"\nSpecifically analyze for the upcoming festival: {festival}"
-
-    prompt += "\n\nRespond ONLY with valid JSON, no markdown formatting."
-    return prompt
-
-
-def _call_gemini(prompt: str) -> dict:
-    """Call Gemini API and parse response."""
-    import google.generativeai as genai
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.5-flash")
-    response = model.generate_content(prompt)
-    text = response.text.strip()
-
-    # Clean markdown code blocks if present
-    if text.startswith("```"):
-        text = text.split("\n", 1)[1] if "\n" in text else text[3:]
-    if text.endswith("```"):
-        text = text[:-3]
-    text = text.strip()
-
     try:
-        data = json.loads(text)
-        data["raw_response"] = response.text
-        return data
+        # Run the swarm synchronously to return the API result
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(_run_swarm(context, festival))
+        loop.close()
+        return result
+    except Exception as e:
+        print(f"⚠️  Swarm execution failed: {e} — using demo insights")
+        return _get_demo_insights()
+
+async def _run_swarm(context: Optional[str], festival: Optional[str]) -> dict:
+    """Run the multi-agent workflow."""
+    # 1. Provide the agents with the tool to get their data
+    db_text = fetch_inventory_data()
+    
+    # 2. Add extra user context if provided
+    extra = ""
+    if context:
+        extra += f"\nUser Context: {context}"
+    if festival:
+        extra += f"\nUpcoming Festival: {festival}"
+
+    # 3. Ask Analyst Agent to think
+    print("🤖 Agent [Analyst]: Analyzing inventory metrics...")
+    analyst_result = await analyst_agent.run(
+        f"Review this database and suggest stock actions, slow movers, and festival plans: {db_text} {extra}"
+    )
+
+    # 4. Ask Tax Agent to think
+    print("🤖 Agent [Tax]: Analyzing GST and ITR implications...")
+    tax_result = await tax_agent.run(
+        f"Review this database and advise on estimated GST input credits and supplier concentration risks: {db_text}"
+    )
+
+    # 5. Bring it together with the Orchestrator to format as our required UI JSON
+    print("🤖 Agent [Orchestrator]: Synthesizing Swarm insights...")
+    combine_prompt = (
+        f"Merge these two agent reports into the required JSON schema.\n\n"
+        f"--- Analyst Report ---\n{analyst_result.output}\n\n"
+        f"--- Tax Report ---\n{tax_result.output}"
+    )
+    
+    final_result = await orchestrator.run(combine_prompt)
+    
+    # Final data conversion
+    try:
+        data = json.loads(final_result.output)
     except json.JSONDecodeError:
-        return {
+        data = {
             "stock_more": [],
             "products_to_avoid": [],
             "festival_recommendations": [],
-            "general_insights": [response.text],
-            "raw_response": response.text,
+            "general_insights": ["Orchestrator failed to format JSON properly. Raw output: " + final_result.output]
         }
+        
+    data["raw_response"] = f"Orchestrated by RetailIQ Swarm:\n\n1. Analyst: {analyst_result.output}\n\n2. Tax & Compliance: {tax_result.output}"
+    
+    print("✅ Swarm execution complete")
+    return data
+
+
+def _build_product_summary(products: list[dict]) -> str:
+    """Build a text summary of product data (Left here for backward compatibility if needed)."""
 
 
 def _get_demo_insights() -> dict:

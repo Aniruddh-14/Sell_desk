@@ -36,6 +36,7 @@ class DashboardData(BaseModel):
     slow_moving: list[dict] = []
     profit_analysis: list[dict] = []
     category_distribution: list[dict] = []
+    monthly_sales: list[dict] = []
 
 
 class InsightRequest(BaseModel):

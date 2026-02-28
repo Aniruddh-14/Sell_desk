@@ -92,6 +92,7 @@ def get_dashboard_data() -> dict:
             "slow_moving": [],
             "profit_analysis": [],
             "category_distribution": [],
+            "monthly_sales": [],
         }
 
     total_products = len(products)
@@ -130,6 +131,44 @@ def get_dashboard_data() -> dict:
         cat_count[c] = cat_count.get(c, 0) + 1
     category_distribution = [{"category": k, "count": v} for k, v in cat_count.items()]
 
+    # Monthly sales timeline
+    from collections import defaultdict
+    import datetime
+    
+    monthly_data = defaultdict(lambda: {"revenue": 0.0, "products": 0})
+    now = datetime.datetime.now()
+    
+    for p in products:
+        d_str = p.get("created_at")
+        if not d_str:
+            d_str = now.isoformat()
+        try:
+            # Handle standard ISO formats
+            dt = datetime.datetime.fromisoformat(d_str.replace("Z", "+00:00"))
+            month_key = dt.strftime("%b %Y") # e.g. "Jan 2024"
+        except Exception:
+            month_key = now.strftime("%b %Y")
+            dt = now
+            
+        qty = int(p.get("quantity", 0))
+        price = float(p.get("price", 0))
+        monthly_data[month_key]["revenue"] += qty * price
+        monthly_data[month_key]["products"] += qty
+        
+    monthly_sales = [
+        {"month": k, "revenue": v["revenue"], "products": v["products"]}
+        for k, v in monthly_data.items()
+    ]
+    
+    # Sort chronologically
+    def parse_month(m):
+        try:
+            return datetime.datetime.strptime(m["month"], "%b %Y")
+        except:
+            return datetime.datetime.min
+            
+    monthly_sales.sort(key=parse_month)
+
     return {
         "total_products": total_products,
         "total_revenue": round(total_revenue, 2),
@@ -139,6 +178,7 @@ def get_dashboard_data() -> dict:
         "slow_moving": slow_moving,
         "profit_analysis": profit_analysis,
         "category_distribution": category_distribution,
+        "monthly_sales": monthly_sales,
     }
 
 
@@ -179,9 +219,15 @@ def seed_demo_data():
         "supplier": "Multiple Suppliers",
     })
 
+    import random
+    from datetime import timedelta
+    now = datetime.datetime.now()
+
     for p in demo_products:
         p["invoice_id"] = invoice_id
-        p["created_at"] = datetime.datetime.now().isoformat()
+        # Scatter dates over the last 180 days for better charts
+        random_days = random.randint(0, 180)
+        p["created_at"] = (now - timedelta(days=random_days)).isoformat()
 
     insert_products(demo_products)
     print(f"✅ Seeded {len(demo_products)} demo products")
