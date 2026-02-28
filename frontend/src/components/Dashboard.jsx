@@ -1,25 +1,122 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, animate, useInView } from 'framer-motion';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer, PieChart, Pie, Cell, Legend,
-    LineChart, Line
+    ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts';
+import { Package, IndianRupee, TrendingUp, Users } from 'lucide-react';
 import { getDashboard } from '../api/client';
+import ScrollReveal from './effects/ScrollReveal';
 
-const COLORS = ['#6366f1', '#14b8a6', '#f97316', '#f43f5e', '#8b5cf6', '#10b981', '#0ea5e9', '#f59e0b'];
+const COLORS = [
+    '#6366f1', '#14b8a6', '#f97316', '#f43f5e',
+    '#8b5cf6', '#10b981', '#0ea5e9', '#f59e0b',
+];
+
+const chartTooltipStyle = {
+    backgroundColor: '#111827',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '10px',
+    color: '#f0f4ff',
+    fontSize: '0.84rem',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.55)',
+};
+
+/* ── Stat card configs ── */
+const STAT_CONFIG = [
+    {
+        key: 'total_products',
+        label: 'Total Products',
+        Icon: Package,
+        iconColor: '#6366f1',
+        iconBg: 'rgba(99,102,241,0.13)',
+        formatter: (v) => Math.round(v).toLocaleString('en-IN'),
+    },
+    {
+        key: 'total_revenue',
+        label: 'Total Revenue',
+        Icon: IndianRupee,
+        iconColor: '#14b8a6',
+        iconBg: 'rgba(20,184,166,0.13)',
+        formatter: (v) => `₹${Math.round(v).toLocaleString('en-IN')}`,
+    },
+    {
+        key: 'avg_price',
+        label: 'Avg. Price',
+        Icon: TrendingUp,
+        iconColor: '#f97316',
+        iconBg: 'rgba(249,115,22,0.13)',
+        formatter: (v) => `₹${Math.round(v).toLocaleString('en-IN')}`,
+    },
+    {
+        key: 'supplier_count',
+        label: 'Suppliers',
+        Icon: Users,
+        iconColor: '#f43f5e',
+        iconBg: 'rgba(244,63,94,0.13)',
+        formatter: (v) => Math.round(v).toLocaleString('en-IN'),
+    },
+];
+
+/* ── Live clock ── */
+function LiveClock() {
+    const [time, setTime] = useState(new Date());
+    useEffect(() => {
+        const t = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(t);
+    }, []);
+    return (
+        <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+            {time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+        </span>
+    );
+}
+
+/* ── Count-up number ── */
+function CountUp({ value, formatter = String, duration = 1.7 }) {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true });
+    const started = useRef(false);
+
+    useEffect(() => {
+        if (!isInView || started.current || !ref.current) return;
+        started.current = true;
+        const controls = animate(0, value, {
+            duration,
+            ease: 'easeOut',
+            onUpdate: (v) => {
+                if (ref.current) ref.current.textContent = formatter(v);
+            },
+        });
+        return () => controls.stop();
+    }, [isInView, value, duration, formatter]);
+
+    return <span ref={ref}>{formatter(0)}</span>;
+}
+
+/* ── Stagger container variants ── */
+const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.1 } },
+};
+
+const cardVariants = {
+    hidden: { opacity: 0, y: 36, scale: 0.96 },
+    visible: {
+        opacity: 1, y: 0, scale: 1,
+        transition: { duration: 0.52, ease: [0.25, 0.46, 0.45, 0.94] },
+    },
+};
 
 export default function Dashboard() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadDashboard();
-    }, []);
+    useEffect(() => { loadDashboard(); }, []);
 
     const loadDashboard = async () => {
         try {
-            const result = await getDashboard();
-            setData(result);
+            setData(await getDashboard());
         } catch (err) {
             console.error('Failed to load dashboard:', err);
         } finally {
@@ -30,10 +127,7 @@ export default function Dashboard() {
     if (loading) {
         return (
             <div>
-                <div className="page-header">
-                    <h2> Dashboard</h2>
-                    <p>Loading analytics...</p>
-                </div>
+                <div className="page-header"><h2>Dashboard</h2><p>Loading analytics...</p></div>
                 <div className="loading-spinner" />
                 <p className="loading-text">Crunching your numbers...</p>
             </div>
@@ -49,146 +143,155 @@ export default function Dashboard() {
         );
     }
 
-    const chartTooltipStyle = {
-        backgroundColor: '#1e293b',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: '8px',
-        color: '#f1f5f9',
-        fontSize: '0.85rem',
-    };
-
     return (
         <div>
-            <div className="page-header">
-                <h2>📊 Dashboard</h2>
-                <p>Real-time analytics from your invoice data</p>
-            </div>
+            {/* ════════════════════════════════
+                Cinematic Hero
+            ════════════════════════════════ */}
+            <motion.div
+                className="dashboard-hero"
+                initial={{ opacity: 0, y: 36 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.72, ease: [0.25, 0.4, 0.25, 1] }}
+            >
+                <div className="hero-eyebrow">
+                    <span className="live-dot" />
+                    <span>Live Analytics</span>
+                    <span className="hero-time"><LiveClock /></span>
+                </div>
 
-            {/* Stat Cards */}
-            <div className="stats-grid">
-                <div className="glass-card stat-card animate-in">
-                    <div className="stat-label">Total Products</div>
-                    <div className="stat-value">{data.total_products}</div>
-                </div>
-                <div className="glass-card stat-card animate-in">
-                    <div className="stat-label">Total Revenue</div>
-                    <div className="stat-value">₹{data.total_revenue?.toLocaleString()}</div>
-                </div>
-                <div className="glass-card stat-card animate-in">
-                    <div className="stat-label">Avg. Price</div>
-                    <div className="stat-value">₹{data.avg_price?.toLocaleString()}</div>
-                </div>
-                <div className="glass-card stat-card animate-in">
-                    <div className="stat-label">Suppliers</div>
-                    <div className="stat-value">{data.supplier_count}</div>
-                </div>
-            </div>
+                <h1 className="hero-headline">
+                    Your Business,<br />
+                    <span className="gradient-text">Amplified.</span>
+                </h1>
 
-            {/* Charts */}
+                <p className="hero-sub">
+                    Tracking{' '}
+                    <strong>{data.total_products?.toLocaleString('en-IN')}</strong>{' '}
+                    products across{' '}
+                    <strong>{data.supplier_count}</strong>{' '}
+                    suppliers — powered by Gemini&nbsp;AI.
+                </p>
+            </motion.div>
+
+            {/* ════════════════════════════════
+                Stat Cards — staggered entrance
+            ════════════════════════════════ */}
+            <motion.div
+                className="stats-grid"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                {STAT_CONFIG.map(({ key, label, Icon, iconColor, iconBg, formatter }) => (
+                    <motion.div
+                        key={key}
+                        className="glass-card stat-card"
+                        variants={cardVariants}
+                        whileHover={{ y: -5, transition: { duration: 0.22 } }}
+                    >
+                        <div className="stat-icon" style={{ background: iconBg, color: iconColor }}>
+                            <Icon size={20} />
+                        </div>
+                        <div className="stat-label">{label}</div>
+                        <div className="stat-value">
+                            <CountUp value={data[key] ?? 0} formatter={formatter} />
+                        </div>
+                    </motion.div>
+                ))}
+            </motion.div>
+
+            {/* ════════════════════════════════
+                Charts — scroll-reveal
+            ════════════════════════════════ */}
             <div className="charts-grid">
-                {/* Monthly Sales Timeline */}
-                <div className="glass-card chart-card animate-in" style={{ gridColumn: '1 / -1' }}>
-                    <h3>
-                        <span className="chart-dot" style={{ background: '#0ea5e9' }} />
-                        Sales & Products Timeline
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={data.monthly_sales} margin={{ left: 20, right: 20, top: 20 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                            <YAxis yAxisId="left" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
-                            <YAxis yAxisId="right" orientation="right" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                            <Tooltip contentStyle={chartTooltipStyle} />
-                            <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                            <Line yAxisId="left" type="monotone" dataKey="revenue" name="Revenue" stroke="#0ea5e9" strokeWidth={3} activeDot={{ r: 8 }} />
-                            <Line yAxisId="right" type="monotone" dataKey="products" name="Products Sold" stroke="#f97316" strokeWidth={3} />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
+                <ScrollReveal direction="up" delay={0}>
+                    <div className="glass-card chart-card">
+                        <h3>
+                            <span className="chart-dot" style={{ background: '#10b981' }} />
+                            Top Selling Products
+                        </h3>
+                        <ResponsiveContainer width="100%" height={280}>
+                            <BarChart data={data.top_selling?.slice(0, 8)} layout="vertical" margin={{ left: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
+                                <Bar dataKey="quantity" fill="#10b981" radius={[0, 6, 6, 0]} barSize={15} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </ScrollReveal>
 
-                {/* Top Selling Products */}
-                <div className="glass-card chart-card animate-in">
-                    <h3>
-                        <span className="chart-dot" style={{ background: '#10b981' }} />
-                        Top Selling Products
-                    </h3>
-                    <ResponsiveContainer width="100%" height={280}>
-                        <BarChart data={data.top_selling?.slice(0, 8)} layout="vertical" margin={{ left: 20 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                            <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                            <Tooltip contentStyle={chartTooltipStyle} />
-                            <Bar dataKey="quantity" fill="#10b981" radius={[0, 6, 6, 0]} barSize={18} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+                <ScrollReveal direction="up" delay={0.1}>
+                    <div className="glass-card chart-card">
+                        <h3>
+                            <span className="chart-dot" style={{ background: '#f43f5e' }} />
+                            Slow Moving Products
+                        </h3>
+                        <ResponsiveContainer width="100%" height={280}>
+                            <BarChart data={data.slow_moving?.slice(0, 8)} layout="vertical" margin={{ left: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
+                                <Bar dataKey="quantity" fill="#f43f5e" radius={[0, 6, 6, 0]} barSize={15} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </ScrollReveal>
 
-                {/* Slow Moving Products */}
-                <div className="glass-card chart-card animate-in">
-                    <h3>
-                        <span className="chart-dot" style={{ background: '#f43f5e' }} />
-                        Slow Moving Products
-                    </h3>
-                    <ResponsiveContainer width="100%" height={280}>
-                        <BarChart data={data.slow_moving?.slice(0, 8)} layout="vertical" margin={{ left: 20 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                            <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                            <Tooltip contentStyle={chartTooltipStyle} />
-                            <Bar dataKey="quantity" fill="#f43f5e" radius={[0, 6, 6, 0]} barSize={18} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+                <ScrollReveal direction="up" delay={0.18}>
+                    <div className="glass-card chart-card">
+                        <h3>
+                            <span className="chart-dot" style={{ background: '#6366f1' }} />
+                            Revenue by Supplier
+                        </h3>
+                        <ResponsiveContainer width="100%" height={280}>
+                            <BarChart data={data.profit_analysis} margin={{ left: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                                <XAxis dataKey="supplier" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" height={60} />
+                                <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                                <Tooltip contentStyle={chartTooltipStyle} formatter={(val) => [`₹${val.toLocaleString()}`, 'Revenue']} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
+                                <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={28}>
+                                    {data.profit_analysis?.map((_, idx) => (
+                                        <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </ScrollReveal>
 
-                {/* Revenue by Supplier */}
-                <div className="glass-card chart-card animate-in">
-                    <h3>
-                        <span className="chart-dot" style={{ background: '#6366f1' }} />
-                        Revenue by Supplier
-                    </h3>
-                    <ResponsiveContainer width="100%" height={280}>
-                        <BarChart data={data.profit_analysis} margin={{ left: 20 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis dataKey="supplier" tick={{ fill: '#94a3b8', fontSize: 11 }} angle={-20} textAnchor="end" height={60} />
-                            <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
-                            <Tooltip contentStyle={chartTooltipStyle} formatter={(val) => [`₹${val.toLocaleString()}`, 'Revenue']} />
-                            <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={30}>
-                                {data.profit_analysis?.map((_, idx) => (
-                                    <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
-                                ))}
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-
-                {/* Category Distribution */}
-                <div className="glass-card chart-card animate-in">
-                    <h3>
-                        <span className="chart-dot" style={{ background: '#8b5cf6' }} />
-                        Category Distribution
-                    </h3>
-                    <ResponsiveContainer width="100%" height={280}>
-                        <PieChart>
-                            <Pie
-                                data={data.category_distribution}
-                                dataKey="count"
-                                nameKey="category"
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={100}
-                                innerRadius={50}
-                                paddingAngle={3}
-                                label={({ category, count }) => `${category} (${count})`}
-                                labelLine={{ stroke: '#64748b' }}
-                            >
-                                {data.category_distribution?.map((_, idx) => (
-                                    <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip contentStyle={chartTooltipStyle} />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
+                <ScrollReveal direction="up" delay={0.26}>
+                    <div className="glass-card chart-card">
+                        <h3>
+                            <span className="chart-dot" style={{ background: '#8b5cf6' }} />
+                            Category Distribution
+                        </h3>
+                        <ResponsiveContainer width="100%" height={280}>
+                            <PieChart>
+                                <Pie
+                                    data={data.category_distribution}
+                                    dataKey="count"
+                                    nameKey="category"
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={100}
+                                    innerRadius={52}
+                                    paddingAngle={3}
+                                    label={({ category, count }) => `${category} (${count})`}
+                                    labelLine={{ stroke: '#475569' }}
+                                >
+                                    {data.category_distribution?.map((_, idx) => (
+                                        <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip contentStyle={chartTooltipStyle} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </ScrollReveal>
             </div>
         </div>
     );
