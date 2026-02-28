@@ -34,7 +34,7 @@ export default function InsightsPanel() {
         return (
             <div>
                 <div className="page-header">
-                    <h2>✨ AI Insights</h2>
+                    <h2>AI Insights</h2>
                     <p>Gemini is analyzing your data...</p>
                 </div>
                 <div className="loading-spinner" />
@@ -46,7 +46,7 @@ export default function InsightsPanel() {
     return (
         <div>
             <div className="page-header">
-                <h2>✨ AI Insights</h2>
+                <h2>AI Insights</h2>
                 <p>Smart recommendations powered by Google Gemini</p>
             </div>
 

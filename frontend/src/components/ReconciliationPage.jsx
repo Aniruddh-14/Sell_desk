@@ -2,11 +2,11 @@ import React, { useState, useCallback } from 'react';
 import { uploadPaymentRecords, runReconciliation, getPaymentRecords } from '../api/client';
 
 const STATUS_CONFIG = {
-    matched: { color: '#22c55e', bg: 'rgba(34,197,94,0.12)', icon: '✅', label: 'Matched' },
-    mismatched: { color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', icon: '⚠️', label: 'Mismatched' },
-    missing_invoice: { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', icon: '📄', label: 'Missing Invoice' },
-    missing_payment: { color: '#E6C200', bg: 'rgba(230,194,0,0.12)', icon: '💰', label: 'Missing Payment' },
-    duplicate: { color: '#f97316', bg: 'rgba(249,115,22,0.12)', icon: '🔁', label: 'Duplicate' },
+    matched: { color: '#566A7A', bg: 'rgba(86,106,122,0.1)', icon: '✅', label: 'Matched' },
+    mismatched: { color: '#8A9BAC', bg: 'rgba(138,155,172,0.1)', icon: '⚠️', label: 'Mismatched' },
+    missing_invoice: { color: '#4A4A4A', bg: 'rgba(74,74,74,0.08)', icon: '📄', label: 'Missing Invoice' },
+    missing_payment: { color: '#6D8196', bg: 'rgba(109,129,150,0.1)', icon: '💰', label: 'Missing Payment' },
+    duplicate: { color: '#7B8D9D', bg: 'rgba(123,141,157,0.1)', icon: '🔁', label: 'Duplicate' },
 };
 
 export default function ReconciliationPage() {
@@ -25,7 +25,7 @@ export default function ReconciliationPage() {
         setUploadMsg('');
         try {
             const data = await uploadPaymentRecords(file);
-            setUploadMsg(`✅ Uploaded ${data.count} payment records`);
+            setUploadMsg(`Uploaded ${data.count} payment records`);
             setPaymentCount(data.count);
         } catch (err) {
             setError(err.response?.data?.detail || 'Failed to upload payment records');
@@ -68,17 +68,17 @@ export default function ReconciliationPage() {
                 {/* Upload Payment Records */}
                 <div className="glass-card animate-in">
                     <h3 style={{ color: 'var(--text-primary)', marginBottom: '1rem', fontSize: '1.1rem' }}>
-                        📋 Upload Payment Records
+                        Upload Payment Records
                     </h3>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                        Upload a CSV file with columns: <code style={{ color: '#a78bfa' }}>vendor, amount, date, reference</code>
+                        Upload a CSV file with columns: <code style={{ color: '#6D8196', fontWeight: 600 }}>vendor, amount, date, reference</code>
                     </p>
                     <label
                         htmlFor="payment-csv"
                         style={{
                             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #D4AF37, #FFDF00)',
-                            borderRadius: '10px', color: 'white', fontWeight: '600', cursor: 'pointer',
+                            padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #6D8196, #8A9BAC)',
+                            borderRadius: '10px', color: '#FFFFE3', fontWeight: '600', cursor: 'pointer',
                             fontSize: '0.9rem', transition: 'opacity 0.2s',
                             opacity: uploading ? 0.6 : 1,
                         }}
@@ -86,7 +86,7 @@ export default function ReconciliationPage() {
                         {uploading ? '⏳ Uploading...' : '📂 Choose CSV File'}
                         <input id="payment-csv" type="file" accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} disabled={uploading} />
                     </label>
-                    {uploadMsg && <p style={{ color: '#22c55e', marginTop: '0.75rem', fontSize: '0.9rem' }}>{uploadMsg}</p>}
+                    {uploadMsg && <p style={{ color: '#6D8196', marginTop: '0.75rem', fontSize: '0.9rem' }}>{uploadMsg}</p>}
                     {paymentCount > 0 && <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', fontSize: '0.85rem' }}>
                         {paymentCount} payment records loaded
                     </p>}
@@ -106,19 +106,19 @@ export default function ReconciliationPage() {
                         disabled={reconciling}
                         style={{
                             padding: '0.875rem 2.5rem', fontSize: '1rem',
-                            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                            background: 'linear-gradient(135deg, #6D8196, #566A7A)',
                             opacity: reconciling ? 0.6 : 1,
                         }}
                     >
-                        {reconciling ? '🔄 Analyzing...' : '🔍 Run Reconciliation'}
+                        {reconciling ? 'Analyzing...' : 'Run Reconciliation'}
                     </button>
                 </div>
             </div>
 
             {/* Error */}
             {error && (
-                <div className="glass-card" style={{ background: 'rgba(239,68,68,0.08)', borderLeft: '4px solid #ef4444', marginBottom: '1.5rem' }}>
-                    <span style={{ color: '#fca5a5' }}>❌ {error}</span>
+                <div className="glass-card" style={{ background: 'rgba(74,74,74,0.06)', borderLeft: '4px solid #4A4A4A', marginBottom: '1.5rem' }}>
+                    <span style={{ color: '#4A4A4A' }}>{error}</span>
                 </div>
             )}
 
@@ -127,12 +127,12 @@ export default function ReconciliationPage() {
                 <>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
                         {[
-                            { label: 'Invoices', value: report.total_invoices, icon: '📄', color: '#D4AF37' },
-                            { label: 'Payments', value: report.total_payments, icon: '💳', color: '#FFDF00' },
-                            { label: 'Matched', value: report.matched, icon: '✅', color: '#22c55e' },
-                            { label: 'Mismatched', value: report.mismatched, icon: '⚠️', color: '#f59e0b' },
-                            { label: 'Missing Inv.', value: report.missing_invoices, icon: '📄', color: '#ef4444' },
-                            { label: 'Duplicates', value: report.duplicates, icon: '🔁', color: '#f97316' },
+                            { label: 'Invoices', value: report.total_invoices, icon: '', color: '#6D8196' },
+                            { label: 'Payments', value: report.total_payments, icon: '', color: '#8A9BAC' },
+                            { label: 'Matched', value: report.matched, icon: '', color: '#566A7A' },
+                            { label: 'Mismatched', value: report.mismatched, icon: '', color: '#7B8D9D' },
+                            { label: 'Missing Inv.', value: report.missing_invoices, icon: '', color: '#4A4A4A' },
+                            { label: 'Duplicates', value: report.duplicates, icon: '', color: '#5C6E7E' },
                         ].map((stat, i) => (
                             <div key={i} className="glass-card animate-in" style={{ padding: '1.25rem', textAlign: 'center' }}>
                                 <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{stat.icon}</div>
@@ -147,17 +147,17 @@ export default function ReconciliationPage() {
                         <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem' }}>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Invoice Amount</div>
-                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#D4AF37' }}>₹{report.total_invoice_amount?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#6D8196' }}>₹{report.total_invoice_amount?.toLocaleString()}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Payment Expected</div>
-                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#FFDF00' }}>₹{report.total_payment_amount?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#8A9BAC' }}>₹{report.total_payment_amount?.toLocaleString()}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Discrepancy</div>
                                 <div style={{
                                     fontSize: '1.5rem', fontWeight: '700',
-                                    color: report.amount_discrepancy === 0 ? '#22c55e' : '#ef4444'
+                                    color: report.amount_discrepancy === 0 ? '#566A7A' : '#4A4A4A'
                                 }}>₹{Math.abs(report.amount_discrepancy || 0).toLocaleString()}</div>
                             </div>
                         </div>
@@ -177,9 +177,9 @@ export default function ReconciliationPage() {
                                 </thead>
                                 <tbody>
                                     {report.items?.map((item, idx) => {
-                                        const cfg = STATUS_CONFIG[item.status] || { color: '#94a3b8', bg: 'transparent', icon: '❓', label: item.status };
+                                        const cfg = STATUS_CONFIG[item.status] || { color: '#9A9A9A', bg: 'transparent', icon: '❓', label: item.status };
                                         return (
-                                            <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                            <tr key={idx} style={{ borderBottom: '1px solid rgba(74,74,74,0.06)' }}>
                                                 <td style={{ padding: '0.75rem 0.5rem' }}>
                                                     <span style={{
                                                         display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
@@ -203,7 +203,7 @@ export default function ReconciliationPage() {
                                                 </td>
                                                 <td style={{
                                                     padding: '0.75rem 0.5rem', fontWeight: '600',
-                                                    color: item.amount_diff === 0 ? '#22c55e' : item.amount_diff > 0 ? '#f59e0b' : '#ef4444'
+                                                    color: item.amount_diff === 0 ? '#566A7A' : item.amount_diff > 0 ? '#8A9BAC' : '#4A4A4A'
                                                 }}>
                                                     {item.amount_diff !== 0 ? `₹${item.amount_diff.toLocaleString()}` : '—'}
                                                 </td>
@@ -231,7 +231,7 @@ export default function ReconciliationPage() {
             {/* Empty State */}
             {!report && !error && (
                 <div className="glass-card animate-in" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}></div>
                     <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Ready to Reconcile</h3>
                     <p style={{ color: 'var(--text-muted)', maxWidth: '450px', margin: '0 auto' }}>
                         Upload your payment records CSV, then click "Run Reconciliation" to match them against your uploaded invoices.

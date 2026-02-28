@@ -145,7 +145,7 @@ export default function DataTable() {
                                         <td style={{ fontWeight: 500 }}>{p.product_name}</td>
                                         <td>{p.quantity}</td>
                                         <td>₹{parseFloat(p.price).toLocaleString()}</td>
-                                        <td style={{ color: '#14b8a6', fontWeight: 600 }}>
+                                        <td style={{ color: '#6D8196', fontWeight: 600 }}>
                                             ₹{(parseFloat(p.price) * parseInt(p.quantity)).toLocaleString()}
                                         </td>
                                         <td style={{ color: 'var(--text-secondary)' }}>{p.supplier || '—'}</td>

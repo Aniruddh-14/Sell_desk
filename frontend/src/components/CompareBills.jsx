@@ -35,7 +35,7 @@ export default function CompareBills() {
         return (
             <div>
                 <div className="page-header">
-                    <h2>⚖️ Compare Bills</h2>
+                    <h2>Compare Bills</h2>
                     <p>Loading your invoices...</p>
                 </div>
                 <div className="loading-spinner" />
@@ -63,7 +63,7 @@ export default function CompareBills() {
     return (
         <div>
             <div className="page-header">
-                <h2>⚖️ Compare Bills</h2>
+                <h2>Compare Bills</h2>
                 <p>Select multiple supplier invoices to compare product pricing</p>
             </div>
 

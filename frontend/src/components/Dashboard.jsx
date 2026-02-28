@@ -9,17 +9,17 @@ import { getDashboard } from '../api/client';
 import ScrollReveal from './effects/ScrollReveal';
 
 const COLORS = [
-    '#D4AF37', '#14b8a6', '#f97316', '#f43f5e',
-    '#FFDF00', '#10b981', '#0ea5e9', '#f59e0b',
+    '#6D8196', '#4A4A4A', '#8A9BAC', '#566A7A',
+    '#A3B1BF', '#5C6E7E', '#7B8D9D', '#3A3A3A',
 ];
 
 const chartTooltipStyle = {
-    backgroundColor: '#111827',
-    border: '1px solid rgba(255,255,255,0.08)',
+    backgroundColor: '#FFFFE3',
+    border: '1px solid rgba(74,74,74,0.12)',
     borderRadius: '10px',
-    color: '#f0f4ff',
+    color: '#4A4A4A',
     fontSize: '0.84rem',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.55)',
+    boxShadow: '0 20px 40px rgba(74,74,74,0.15)',
 };
 
 /* ── Stat card configs ── */
@@ -28,32 +28,32 @@ const STAT_CONFIG = [
         key: 'total_products',
         label: 'Total Products',
         Icon: Package,
-        iconColor: '#D4AF37',
-        iconBg: 'rgba(99,102,241,0.13)',
+        iconColor: '#6D8196',
+        iconBg: 'rgba(109,129,150,0.12)',
         formatter: (v) => Math.round(v).toLocaleString('en-IN'),
     },
     {
         key: 'total_revenue',
         label: 'Total Revenue',
         Icon: IndianRupee,
-        iconColor: '#14b8a6',
-        iconBg: 'rgba(20,184,166,0.13)',
+        iconColor: '#566A7A',
+        iconBg: 'rgba(86,106,122,0.12)',
         formatter: (v) => `₹${Math.round(v).toLocaleString('en-IN')}`,
     },
     {
         key: 'avg_price',
         label: 'Avg. Price',
         Icon: TrendingUp,
-        iconColor: '#f97316',
-        iconBg: 'rgba(249,115,22,0.13)',
+        iconColor: '#8A9BAC',
+        iconBg: 'rgba(138,155,172,0.12)',
         formatter: (v) => `₹${Math.round(v).toLocaleString('en-IN')}`,
     },
     {
         key: 'supplier_count',
         label: 'Suppliers',
         Icon: Users,
-        iconColor: '#f43f5e',
-        iconBg: 'rgba(244,63,94,0.13)',
+        iconColor: '#4A5E6E',
+        iconBg: 'rgba(74,94,110,0.12)',
         formatter: (v) => Math.round(v).toLocaleString('en-IN'),
     },
 ];
@@ -208,19 +208,19 @@ export default function Dashboard() {
                 <ScrollReveal direction="up" delay={0}>
                     <div className="glass-card chart-card" style={{ gridColumn: '1 / -1' }}>
                         <h3>
-                            <span className="chart-dot" style={{ background: '#0ea5e9' }} />
+                            <span className="chart-dot" style={{ background: '#6D8196' }} />
                             Sales & Products Timeline
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={data.monthly_sales} margin={{ left: 20, right: 20, top: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                                <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                                <YAxis yAxisId="left" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
-                                <YAxis yAxisId="right" orientation="right" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(74,74,74,0.08)" />
+                                <XAxis dataKey="month" tick={{ fill: '#9A9A9A', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis yAxisId="left" tick={{ fill: '#9A9A9A', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                                <YAxis yAxisId="right" orientation="right" tick={{ fill: '#9A9A9A', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(109,129,150,0.06)' }} />
                                 <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                                <Line yAxisId="left" type="monotone" dataKey="revenue" name="Revenue" stroke="#0ea5e9" strokeWidth={3} activeDot={{ r: 8 }} />
-                                <Line yAxisId="right" type="monotone" dataKey="products" name="Products Sold" stroke="#f97316" strokeWidth={3} />
+                                <Line yAxisId="left" type="monotone" dataKey="revenue" name="Revenue" stroke="#6D8196" strokeWidth={3} activeDot={{ r: 8 }} />
+                                <Line yAxisId="right" type="monotone" dataKey="products" name="Products Sold" stroke="#4A4A4A" strokeWidth={3} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
@@ -229,16 +229,16 @@ export default function Dashboard() {
                 <ScrollReveal direction="up" delay={0.1}>
                     <div className="glass-card chart-card">
                         <h3>
-                            <span className="chart-dot" style={{ background: '#10b981' }} />
+                            <span className="chart-dot" style={{ background: '#566A7A' }} />
                             Top Selling Products
                         </h3>
                         <ResponsiveContainer width="100%" height={280}>
                             <BarChart data={data.top_selling?.slice(0, 8)} layout="vertical" margin={{ left: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                                <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
-                                <Bar dataKey="quantity" fill="#10b981" radius={[0, 6, 6, 0]} barSize={15} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(74,74,74,0.08)" />
+                                <XAxis type="number" tick={{ fill: '#9A9A9A', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#6B6B6B', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(109,129,150,0.06)' }} />
+                                <Bar dataKey="quantity" fill="#6D8196" radius={[0, 6, 6, 0]} barSize={15} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -247,16 +247,16 @@ export default function Dashboard() {
                 <ScrollReveal direction="up" delay={0.1}>
                     <div className="glass-card chart-card">
                         <h3>
-                            <span className="chart-dot" style={{ background: '#f43f5e' }} />
+                            <span className="chart-dot" style={{ background: '#4A4A4A' }} />
                             Slow Moving Products
                         </h3>
                         <ResponsiveContainer width="100%" height={280}>
                             <BarChart data={data.slow_moving?.slice(0, 8)} layout="vertical" margin={{ left: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                                <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
-                                <Bar dataKey="quantity" fill="#f43f5e" radius={[0, 6, 6, 0]} barSize={15} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(74,74,74,0.08)" />
+                                <XAxis type="number" tick={{ fill: '#9A9A9A', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                <YAxis dataKey="name" type="category" width={120} tick={{ fill: '#6B6B6B', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'rgba(109,129,150,0.06)' }} />
+                                <Bar dataKey="quantity" fill="#4A4A4A" radius={[0, 6, 6, 0]} barSize={15} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -265,15 +265,15 @@ export default function Dashboard() {
                 <ScrollReveal direction="up" delay={0.18}>
                     <div className="glass-card chart-card">
                         <h3>
-                            <span className="chart-dot" style={{ background: '#6366f1' }} />
+                            <span className="chart-dot" style={{ background: '#8A9BAC' }} />
                             Revenue by Supplier
                         </h3>
                         <ResponsiveContainer width="100%" height={280}>
                             <BarChart data={data.profit_analysis} margin={{ left: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                                <XAxis dataKey="supplier" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" height={60} />
-                                <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
-                                <Tooltip contentStyle={chartTooltipStyle} formatter={(val) => [`₹${val.toLocaleString()}`, 'Revenue']} cursor={{ fill: 'rgba(255,255,255,0.025)' }} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(74,74,74,0.08)" />
+                                <XAxis dataKey="supplier" tick={{ fill: '#6B6B6B', fontSize: 11 }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" height={60} />
+                                <YAxis tick={{ fill: '#9A9A9A', fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+                                <Tooltip contentStyle={chartTooltipStyle} formatter={(val) => [`₹${val.toLocaleString()}`, 'Revenue']} cursor={{ fill: 'rgba(109,129,150,0.06)' }} />
                                 <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={28}>
                                     {data.profit_analysis?.map((_, idx) => (
                                         <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
@@ -287,7 +287,7 @@ export default function Dashboard() {
                 <ScrollReveal direction="up" delay={0.26}>
                     <div className="glass-card chart-card">
                         <h3>
-                            <span className="chart-dot" style={{ background: '#8b5cf6' }} />
+                            <span className="chart-dot" style={{ background: '#566A7A' }} />
                             Category Distribution
                         </h3>
                         <ResponsiveContainer width="100%" height={280}>
@@ -302,7 +302,7 @@ export default function Dashboard() {
                                     innerRadius={52}
                                     paddingAngle={3}
                                     label={({ category, count }) => `${category} (${count})`}
-                                    labelLine={{ stroke: '#475569' }}
+                                    labelLine={{ stroke: '#9A9A9A' }}
                                 >
                                     {data.category_distribution?.map((_, idx) => (
                                         <Cell key={idx} fill={COLORS[idx % COLORS.length]} />

@@ -61,7 +61,7 @@ export default function UploadInvoice() {
     return (
         <div>
             <div className="page-header">
-                <h2>📄 Upload Invoice</h2>
+                <h2>Upload Invoice</h2>
                 <p>Upload an invoice or receipt to extract product data via AI-powered OCR</p>
             </div>
 

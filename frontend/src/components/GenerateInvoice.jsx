@@ -62,7 +62,7 @@ export default function GenerateInvoice() {
             `}</style>
 
             <div className="page-header no-print">
-                <h2>🖨️ Generate Invoice</h2>
+                <h2>Generate Invoice</h2>
                 <p>Create outbound POS bills for your customers</p>
             </div>
 

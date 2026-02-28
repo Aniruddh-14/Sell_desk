@@ -24,7 +24,7 @@ export default function ReportsITR() {
         return (
             <div>
                 <div className="page-header">
-                    <h2>📊 Reports & ITR</h2>
+                    <h2>Reports & ITR</h2>
                     <p>Compiling financial statements...</p>
                 </div>
                 <div className="loading-spinner" />
@@ -43,7 +43,7 @@ export default function ReportsITR() {
     return (
         <div>
             <div className="page-header">
-                <h2>📊 Reports & ITR</h2>
+                <h2>Reports & ITR</h2>
                 <p>Advanced financial dashboard for Income Tax Return (ITR) estimates</p>
             </div>
 
