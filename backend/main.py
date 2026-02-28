@@ -22,6 +22,8 @@ from ocr import extract_products_from_image_gemini, encode_image_bytes
 from ocr import extract_products_from_image_gemini, encode_image_bytes
 from gemini_insights import generate_insights
 from reports import generate_itr_report
+from auth_utils import get_current_user
+from fastapi import Depends
 
 
 @asynccontextmanager
@@ -54,7 +56,10 @@ app.add_middleware(
 # ──────────────────────────────────────────────
 
 @app.post("/api/upload", response_model=UploadResponse)
-async def upload_invoice(file: UploadFile = File(...)):
+async def upload_invoice(
+    file: UploadFile = File(...),
+    user_id: str = Depends(get_current_user)
+):
     """Upload an invoice image/PDF and extract product data via OCR."""
     if not file.filename:
         raise HTTPException(400, "No file provided")
@@ -90,7 +95,7 @@ async def upload_invoice(file: UploadFile = File(...)):
             "upload_date": datetime.datetime.now().isoformat(),
             "raw_ocr_text": raw_text,
             "supplier": "Unknown",
-        })
+        }, user_id=user_id)
         return UploadResponse(
             invoice_id=invoice["id"],
             filename=file.filename,
@@ -105,14 +110,14 @@ async def upload_invoice(file: UploadFile = File(...)):
         "upload_date": datetime.datetime.now().isoformat(),
         "raw_ocr_text": raw_text,
         "supplier": products[0].get("supplier", "Unknown") if products else "Unknown",
-    })
+    }, user_id=user_id)
 
     # Store products
     for p in products:
         p["invoice_id"] = invoice["id"]
         p["created_at"] = datetime.datetime.now().isoformat()
 
-    insert_products(products)
+    insert_products(products, user_id=user_id)
 
     return UploadResponse(
         invoice_id=invoice["id"],
@@ -132,9 +137,10 @@ async def list_products(
     search: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     supplier: Optional[str] = Query(None),
+    user_id: str = Depends(get_current_user)
 ):
     """List all products with optional filters."""
-    products = get_all_products()
+    products = get_all_products(user_id=user_id)
 
     if search:
         search_lower = search.lower()
@@ -158,9 +164,9 @@ async def list_products(
 # ──────────────────────────────────────────────
 
 @app.get("/api/invoices")
-async def list_invoices():
+async def list_invoices(user_id: str = Depends(get_current_user)):
     """List all raw invoices."""
-    invoices = get_all_invoices()
+    invoices = get_all_invoices(user_id=user_id)
     return {"invoices": invoices, "total": len(invoices)}
 
 
@@ -169,9 +175,9 @@ async def list_invoices():
 # ──────────────────────────────────────────────
 
 @app.get("/api/dashboard")
-async def dashboard():
+async def dashboard(user_id: str = Depends(get_current_user)):
     """Get aggregated dashboard analytics."""
-    return get_dashboard_data()
+    return get_dashboard_data(user_id=user_id)
 
 
 # ──────────────────────────────────────────────
@@ -179,9 +185,12 @@ async def dashboard():
 # ──────────────────────────────────────────────
 
 @app.post("/api/insights")
-async def get_insights(request: InsightRequest = None):
+async def get_insights(
+    request: InsightRequest = None,
+    user_id: str = Depends(get_current_user)
+):
     """Generate AI-powered business insights using Gemini."""
-    products = get_all_products()
+    products = get_all_products(user_id=user_id)
     context = request.context if request else None
     festival = request.festival if request else None
     insights = generate_insights(products, context, festival)
@@ -193,9 +202,9 @@ async def get_insights(request: InsightRequest = None):
 # ──────────────────────────────────────────────
 
 @app.get("/api/export/csv")
-async def export_csv():
+async def export_csv(user_id: str = Depends(get_current_user)):
     """Export all product data as CSV."""
-    products = get_all_products()
+    products = get_all_products(user_id=user_id)
     if not products:
         raise HTTPException(404, "No products to export")
 
@@ -219,9 +228,9 @@ async def export_csv():
 # ──────────────────────────────────────────────
 
 @app.get("/api/reports/itr")
-async def get_itr_endpoint():
+async def get_itr_endpoint(user_id: str = Depends(get_current_user)):
     """Get ITR and financial summary report."""
-    return generate_itr_report()
+    return generate_itr_report(user_id=user_id)
 
 
 # ──────────────────────────────────────────────

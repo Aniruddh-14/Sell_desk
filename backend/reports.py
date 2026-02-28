@@ -1,9 +1,9 @@
 from database import get_all_products
 from typing import Dict, Any
 
-def generate_itr_report() -> Dict[str, Any]:
+def generate_itr_report(user_id: str = None) -> Dict[str, Any]:
     """Aggregates all product data to generate an ITR / financial report."""
-    products = get_all_products()
+    products = get_all_products(user_id=user_id)
     
     total_purchases = 0.0
     total_qty = 0
