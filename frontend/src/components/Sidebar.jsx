@@ -1,17 +1,13 @@
 import React from 'react';
-import {
-    LayoutDashboard,
-    Upload,
-    Database,
-    Sparkles,
-    Store,
-} from 'lucide-react';
 
 const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'upload', label: 'Upload Invoice', icon: Upload },
-    { id: 'data', label: 'Product Data', icon: Database },
-    { id: 'insights', label: 'AI Insights', icon: Sparkles },
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'upload', label: 'Upload Invoice' },
+    { id: 'data', label: 'Product Data' },
+    { id: 'compare', label: 'Compare Bills' },
+    { id: 'generate', label: 'Generate Bill' },
+    { id: 'insights', label: 'AI Insights' },
+    { id: 'reports', label: 'Reports & ITR' },
 ];
 
 export default function Sidebar({ activeTab, onTabChange }) {
@@ -24,7 +20,6 @@ export default function Sidebar({ activeTab, onTabChange }) {
 
             <nav className="sidebar-nav">
                 {navItems.map((item) => {
-                    const Icon = item.icon;
                     return (
                         <button
                             key={item.id}
@@ -32,7 +27,6 @@ export default function Sidebar({ activeTab, onTabChange }) {
                             className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
                             onClick={() => onTabChange(item.id)}
                         >
-                            <Icon className="nav-icon" />
                             {item.label}
                         </button>
                     );

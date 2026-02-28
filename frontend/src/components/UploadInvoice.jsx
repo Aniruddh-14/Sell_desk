@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { UploadCloud, CheckCircle, FileText, AlertCircle } from 'lucide-react';
 import { uploadInvoice } from '../api/client';
 
 export default function UploadInvoice() {
@@ -74,7 +73,6 @@ export default function UploadInvoice() {
                     id="upload-dropzone"
                 >
                     <input {...getInputProps()} />
-                    <UploadCloud className="upload-icon" />
                     {isDragActive ? (
                         <>
                             <h3>Drop your file here!</h3>
@@ -114,7 +112,6 @@ export default function UploadInvoice() {
                 {/* Error */}
                 {error && (
                     <div style={{ marginTop: 24, padding: '16px 20px', background: 'rgba(244, 63, 94, 0.1)', borderRadius: 12, border: '1px solid rgba(244, 63, 94, 0.3)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <AlertCircle size={20} color="#f43f5e" />
                         <span style={{ color: '#fca5a5', fontSize: '0.9rem' }}>{error}</span>
                         <button className="btn btn-secondary" onClick={reset} style={{ marginLeft: 'auto' }}>Try Again</button>
                     </div>
@@ -124,7 +121,6 @@ export default function UploadInvoice() {
                 {result && (
                     <div className="extracted-data">
                         <h3>
-                            <CheckCircle size={22} className="check-icon" />
                             Extracted {result.products_extracted} products from {result.filename}
                         </h3>
 
@@ -163,7 +159,6 @@ export default function UploadInvoice() {
 
                         <div style={{ marginTop: 20 }}>
                             <button className="btn btn-primary" onClick={reset}>
-                                <UploadCloud size={16} />
                                 Upload Another Invoice
                             </button>
                         </div>

@@ -19,7 +19,9 @@ from database import (
     get_all_invoices, get_dashboard_data, seed_demo_data
 )
 from ocr import extract_products_from_image_gemini, encode_image_bytes
+from ocr import extract_products_from_image_gemini, encode_image_bytes
 from gemini_insights import generate_insights
+from reports import generate_itr_report
 
 
 @asynccontextmanager
@@ -57,31 +59,28 @@ async def upload_invoice(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(400, "No file provided")
 
-    allowed = {".png", ".jpg", ".jpeg", ".webp", ".pdf", ".bmp", ".tiff"}
+    allowed = {
+        ".png": "image/png", 
+        ".jpg": "image/jpeg", 
+        ".jpeg": "image/jpeg", 
+        ".webp": "image/webp", 
+        ".pdf": "application/pdf", 
+        ".bmp": "image/bmp", 
+        ".tiff": "image/tiff"
+    }
     ext = "." + file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
     if ext not in allowed:
         raise HTTPException(400, f"Unsupported file type: {ext}")
 
+    mime_type = allowed[ext]
     contents = await file.read()
 
-    # Handle PDF → convert first page to image
-    if ext == ".pdf":
-        try:
-            from pdf2image import convert_from_bytes
-            images = convert_from_bytes(contents, first_page=1, last_page=1)
-            buf = io.BytesIO()
-            images[0].save(buf, format="PNG")
-            contents = buf.getvalue()
-        except Exception as e:
-            print(f"⚠️  PDF conversion failed: {e}")
-            raise HTTPException(400, "PDF conversion failed. Please upload an image instead.")
+    # Encode document to base64
+    doc_b64 = encode_image_bytes(contents)
 
-    # Encode image to base64
-    img_b64 = encode_image_bytes(contents)
-
-    # Use Gemini Vision to read the invoice image directly
-    print("🔄 Using Gemini Vision to read the invoice image directly")
-    raw_text, products = extract_products_from_image_gemini(img_b64)
+    # Use Gemini Vision to read the invoice directly
+    print(f"🔄 Using Gemini Vision to read the invoice ({ext}) directly")
+    raw_text, products = extract_products_from_image_gemini(doc_b64, mime_type)
 
     if not products:
         raw_text = raw_text or "No text could be extracted from this image."
@@ -155,6 +154,17 @@ async def list_products(
 
 
 # ──────────────────────────────────────────────
+# Invoices
+# ──────────────────────────────────────────────
+
+@app.get("/api/invoices")
+async def list_invoices():
+    """List all raw invoices."""
+    invoices = get_all_invoices()
+    return {"invoices": invoices, "total": len(invoices)}
+
+
+# ──────────────────────────────────────────────
 # Dashboard
 # ──────────────────────────────────────────────
 
@@ -202,6 +212,16 @@ async def export_csv():
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=products_export.csv"},
     )
+
+
+# ──────────────────────────────────────────────
+# Reports
+# ──────────────────────────────────────────────
+
+@app.get("/api/reports/itr")
+async def get_itr_endpoint():
+    """Get ITR and financial summary report."""
+    return generate_itr_report()
 
 
 # ──────────────────────────────────────────────

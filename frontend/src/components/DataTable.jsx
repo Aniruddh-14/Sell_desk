@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, RefreshCw } from 'lucide-react';
 import { getProducts, exportCSV } from '../api/client';
 
 export default function DataTable() {
@@ -76,7 +75,7 @@ export default function DataTable() {
         return (
             <div>
                 <div className="page-header">
-                    <h2>🗃️ Product Data</h2>
+                    <h2> Product Data</h2>
                     <p>Loading products...</p>
                 </div>
                 <div className="loading-spinner" />
@@ -94,7 +93,6 @@ export default function DataTable() {
             <div className="glass-card animate-in">
                 <div className="table-header">
                     <div className="search-box">
-                        <Search className="search-icon" />
                         <input
                             type="text"
                             id="product-search"
@@ -105,11 +103,9 @@ export default function DataTable() {
                     </div>
                     <div className="table-actions">
                         <button className="btn btn-secondary" onClick={loadProducts} id="refresh-data">
-                            <RefreshCw size={16} className="btn-icon" />
                             Refresh
                         </button>
                         <button className="btn btn-success" onClick={handleExport} id="export-csv">
-                            <Download size={16} className="btn-icon" />
                             Export CSV
                         </button>
                     </div>

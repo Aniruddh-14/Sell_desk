@@ -14,8 +14,8 @@ def encode_image_bytes(image_bytes: bytes) -> str:
     return base64.b64encode(image_bytes).decode("utf-8")
 
 
-def extract_products_from_image_gemini(image_base64: str) -> tuple[str, list[dict]]:
-    """Use Gemini Vision to directly read the invoice image and extract products.
+def extract_products_from_image_gemini(image_base64: str, mime_type: str = "image/png") -> tuple[str, list[dict]]:
+    """Use Gemini Vision to directly read the invoice document (image/pdf) and extract products.
     
     Returns (raw_ocr_text, products_list).
     """
@@ -55,13 +55,13 @@ RULES for products:
 
 Return ONLY the JSON object, nothing else."""
 
-        # Send image to Gemini
-        image_part = {
-            "mime_type": "image/png",
+        # Send document to Gemini
+        document_part = {
+            "mime_type": mime_type,
             "data": image_base64,
         }
 
-        response = model.generate_content([prompt, image_part])
+        response = model.generate_content([prompt, document_part])
         text = response.text.strip()
 
         # Clean markdown code blocks if present

@@ -5,6 +5,9 @@ import Dashboard from './components/Dashboard';
 import UploadInvoice from './components/UploadInvoice';
 import DataTable from './components/DataTable';
 import InsightsPanel from './components/InsightsPanel';
+import CompareBills from './components/CompareBills';
+import GenerateInvoice from './components/GenerateInvoice';
+import ReportsITR from './components/ReportsITR';
 
 function App() {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -17,8 +20,14 @@ function App() {
                 return <UploadInvoice />;
             case 'data':
                 return <DataTable />;
+            case 'compare':
+                return <CompareBills />;
+            case 'generate':
+                return <GenerateInvoice />;
             case 'insights':
                 return <InsightsPanel />;
+            case 'reports':
+                return <ReportsITR />;
             default:
                 return <Dashboard />;
         }

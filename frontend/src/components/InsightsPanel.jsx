@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw } from 'lucide-react';
 import { getInsights } from '../api/client';
 
 export default function InsightsPanel() {
@@ -60,20 +59,19 @@ export default function InsightsPanel() {
                     id="festival-select"
                 >
                     <option value="">All Festivals</option>
-                    <option value="Diwali">🪔 Diwali</option>
-                    <option value="Holi">🎨 Holi</option>
-                    <option value="Navratri">🙏 Navratri</option>
-                    <option value="Eid">☪️ Eid</option>
-                    <option value="Christmas">🎄 Christmas</option>
-                    <option value="Pongal">🌾 Pongal</option>
-                    <option value="Raksha Bandhan">🪢 Raksha Bandhan</option>
+                    <option value="Diwali"> Diwali</option>
+                    <option value="Holi"> Holi</option>
+                    <option value="Navratri"> Navratri</option>
+                    <option value="Eid"> Eid</option>
+                    <option value="Christmas"> Christmas</option>
+                    <option value="Pongal"> Pongal</option>
+                    <option value="Raksha Bandhan"> Raksha Bandhan</option>
                 </select>
                 <button
                     className="btn btn-primary"
                     onClick={() => loadInsights()}
                     id="refresh-insights"
                 >
-                    <RefreshCw size={16} />
                     Regenerate Insights
                 </button>
             </div>
@@ -84,7 +82,6 @@ export default function InsightsPanel() {
                     {insights.stock_more?.length > 0 && (
                         <div className="glass-card insight-card stock-more animate-in">
                             <div className="insight-card-header">
-                                <div className="insight-icon">📈</div>
                                 <h3>Products to Stock More</h3>
                             </div>
                             <ul className="insight-list">
@@ -99,7 +96,6 @@ export default function InsightsPanel() {
                     {insights.products_to_avoid?.length > 0 && (
                         <div className="glass-card insight-card avoid animate-in">
                             <div className="insight-card-header">
-                                <div className="insight-icon">⚠️</div>
                                 <h3>Products to Avoid</h3>
                             </div>
                             <ul className="insight-list">
@@ -114,7 +110,6 @@ export default function InsightsPanel() {
                     {insights.festival_recommendations?.length > 0 && (
                         <div className="glass-card insight-card festival animate-in">
                             <div className="insight-card-header">
-                                <div className="insight-icon">🎉</div>
                                 <h3>Festival Recommendations</h3>
                             </div>
                             <ul className="insight-list">
@@ -129,7 +124,6 @@ export default function InsightsPanel() {
                     {insights.general_insights?.length > 0 && (
                         <div className="glass-card insight-card general animate-in">
                             <div className="insight-card-header">
-                                <div className="insight-icon">💡</div>
                                 <h3>Business Insights</h3>
                             </div>
                             <ul className="insight-list">

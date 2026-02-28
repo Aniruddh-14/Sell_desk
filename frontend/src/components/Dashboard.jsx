@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Package,
-    DollarSign,
-    TrendingUp,
-    Users,
-} from 'lucide-react';
-import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from 'recharts';
@@ -36,7 +30,7 @@ export default function Dashboard() {
         return (
             <div>
                 <div className="page-header">
-                    <h2>📊 Dashboard</h2>
+                    <h2> Dashboard</h2>
                     <p>Loading analytics...</p>
                 </div>
                 <div className="loading-spinner" />
@@ -72,22 +66,18 @@ export default function Dashboard() {
             {/* Stat Cards */}
             <div className="stats-grid">
                 <div className="glass-card stat-card animate-in">
-                    <div className="stat-icon"><Package size={22} /></div>
                     <div className="stat-label">Total Products</div>
                     <div className="stat-value">{data.total_products}</div>
                 </div>
                 <div className="glass-card stat-card animate-in">
-                    <div className="stat-icon"><DollarSign size={22} /></div>
                     <div className="stat-label">Total Revenue</div>
                     <div className="stat-value">₹{data.total_revenue?.toLocaleString()}</div>
                 </div>
                 <div className="glass-card stat-card animate-in">
-                    <div className="stat-icon"><TrendingUp size={22} /></div>
                     <div className="stat-label">Avg. Price</div>
                     <div className="stat-value">₹{data.avg_price?.toLocaleString()}</div>
                 </div>
                 <div className="glass-card stat-card animate-in">
-                    <div className="stat-icon"><Users size={22} /></div>
                     <div className="stat-label">Suppliers</div>
                     <div className="stat-value">{data.supplier_count}</div>
                 </div>

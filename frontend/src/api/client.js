@@ -26,6 +26,16 @@ export async function getDashboard() {
     return res.data;
 }
 
+export async function getInvoices() {
+    const res = await api.get('/invoices');
+    return res.data;
+}
+
+export async function getITRReport() {
+    const res = await api.get('/reports/itr');
+    return res.data;
+}
+
 export async function getInsights(body = {}) {
     const res = await api.post('/insights', body);
     return res.data;
