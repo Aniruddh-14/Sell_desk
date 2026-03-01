@@ -20,7 +20,7 @@ from database import (
 )
 from ocr import extract_products_from_image_gemini, encode_image_bytes
 from gemini_insights import generate_insights
-from reports import generate_itr_report
+from reports import generate_itr_report, generate_itr_pdf
 from auth_utils import get_current_user
 from fastapi import Depends
 
@@ -242,6 +242,16 @@ async def export_csv(user_id: str = Depends(get_current_user)):
 async def get_itr_endpoint(user_id: str = Depends(get_current_user)):
     """Get ITR and financial summary report."""
     return generate_itr_report(user_id=user_id)
+
+@app.get("/api/reports/itr/pdf")
+async def download_itr_pdf(user_id: str = Depends(get_current_user)):
+    """Download the ITR report as a PDF document."""
+    pdf_stream = generate_itr_pdf(user_id=user_id)
+    return StreamingResponse(
+        pdf_stream,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=FinSight_ITR_Report.pdf"}
+    )
 
 # ──────────────────────────────────────────────
 # Reconciliation

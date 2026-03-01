@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getITRReport } from '../api/client';
+import { getITRReport, exportITRPDF } from '../api/client';
 
 export default function ReportsITR() {
     const [report, setReport] = useState(null);
@@ -42,9 +42,15 @@ export default function ReportsITR() {
 
     return (
         <div>
-            <div className="page-header">
-                <h2>Reports & ITR</h2>
-                <p>Advanced financial dashboard for Income Tax Return (ITR) estimates</p>
+            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                    <h2>Reports & ITR</h2>
+                    <p>Advanced financial dashboard for Income Tax Return (ITR) estimates</p>
+                </div>
+                <button className="btn btn-primary" onClick={exportITRPDF} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export Statement (PDF)
+                </button>
             </div>
 
             <div className="stats-grid">
@@ -125,11 +131,7 @@ export default function ReportsITR() {
                 </div>
             </div>
 
-            <div className="glass-card animate-in" style={{ marginTop: 24, padding: 30, background: 'linear-gradient(to right, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.05))' }}>
-                <h3 style={{ marginBottom: 12 }}>Download Full ITR Report</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>Export a complete CA-ready financial statement detailing all expenses, supplier payments, and GST credit estimations required for quarterly filings.</p>
-                <button className="btn btn-primary" onClick={() => window.print()}>Export Statement (PDF)</button>
-            </div>
+
         </div>
     );
 }

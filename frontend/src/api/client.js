@@ -66,6 +66,18 @@ export async function exportCSV() {
     window.URL.revokeObjectURL(url);
 }
 
+export async function exportITRPDF() {
+    const res = await api.get('/reports/itr/pdf', { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'FinSight_ITR_Report.pdf');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+}
+
 export async function uploadPaymentRecords(file) {
     const formData = new FormData();
     formData.append('file', file);

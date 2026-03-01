@@ -176,10 +176,8 @@ body {
 .sidebar-logo h1 {
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #FFFFE3, #CBCBCB, #8A9BAC);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #FFFFE3;
+  /* Solid Ivory */
   letter-spacing: -0.5px;
 }
 
@@ -298,8 +296,17 @@ body {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
 }
 
 .hero-time {
