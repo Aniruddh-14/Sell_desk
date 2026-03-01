@@ -7,14 +7,21 @@ This project consists of a **FastAPI backend** and a **React (Vite) frontend**. 
 Render is perfect for Python/FastAPI backends.
 
 1. Create a free account on [Render](https://render.com).
-2. Click **New +** and select **Blueprint**.
+2. Click **New +** and select **Web Service**.
 3. Connect your GitHub repository containing this project.
-4. Render will automatically detect the `render.yaml` file in the root directory and configure the service for you.
-5. In the Render Dashboard, you will be prompted to enter your Environment Variables. You MUST enter:
-   - `SUPABASE_URL`
-   - `SUPABASE_KEY`
-   - `GEMINI_API_KEY`
-6. Click **Apply** or **Create Web Service**.
+4. Configure the Web Service with the following details:
+   - **Name:** `finsight-ocr-backend` (or your preferred name)
+   - **Language:** `Python 3`
+   - **Branch:** `main`
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
+5. Click on **Environment Variables** (or Advanced) and add the following keys:
+   - `PYTHON_VERSION` set to `3.11.0`
+   - `SUPABASE_URL` set to `<your-supabase-url>`
+   - `SUPABASE_KEY` set to `<your-supabase-key>`
+   - `GEMINI_API_KEY` set to `<your-gemini-key>`
+6. Click **Create Web Service**.
 7. Once the build finishes, Render will give you a public URL (e.g., `https://finsight-ocr-backend.onrender.com`).
    - **Copy this URL**, you will need it for the frontend!
 
@@ -35,8 +42,11 @@ Vercel is the fastest and easiest way to host a Vite React application.
 8. **VERY IMPORTANT**: Set the **Framework Preset** to `Vite`.
    - Set the **Root Directory** to `frontend`.
    - The build command should default to `npm run build` and the output directory should be `dist`.
-9. Click **Deploy**. Vercel will build and host your frontend.
+9. Under **Environment Variables**, add your Supabase credentials so the frontend can authenticate users:
+   - `VITE_SUPABASE_URL` = `<your-supabase-url>`
+   - `VITE_SUPABASE_KEY` = `<your-supabase-anon-key>`
+10. Click **Deploy**. Vercel will build and host your frontend.
 
 ### Troubleshooting
 - **CORS Issues:** If your frontend cannot communicate with the backend on Render, ensure the `vercel.json` rewrites are correctly targeting your secure `https://...onrender.com` backend URL.
-- **Environment Variables:** Remember that the frontend doesn't need the Supabase or Gemini keys. Those must be securely added to your Render web service environment settings.
+- **Backend API Key:** The frontend only needs Supabase credentials. Do **not** put your `GEMINI_API_KEY` in Vercel. That stays securely on the Render backend.
