@@ -323,7 +323,7 @@ Generate GST-ready report
 
 # 12. Demo & Video
 
-Live Demo Link: (Add link here)  
+Live Demo Link: https://fin-sight-ocr-orcin.vercel.app/ 
 Demo Video Link: (Add link here)  
 GitHub Repository: https://github.com/ananyapandey9895/FinSight-OCR
 
