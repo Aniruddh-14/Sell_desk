@@ -15,7 +15,7 @@ An AI-driven SaaS platform that converts invoice images into structured data and
 # 1. Problem Statement
 
 ## Problem Title  
-The “Data Trap” in Traditional Retail Inventory Management
+The “Data Trap” in Traditional Retail Inventory Management.
 
 ## Problem Description  
 Small and medium retailers rely heavily on intuition and manual bookkeeping. Invoices are stored as paper documents, and manual data entry into billing software is slow and error-prone.
