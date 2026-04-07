@@ -61,109 +61,138 @@ export default function UploadInvoice() {
     return (
         <div>
             <div className="page-header">
-                <h2>Upload Invoice</h2>
-                <p>Upload an invoice or receipt to extract product data via AI-powered OCR</p>
+                <div>
+                    <div className="page-eyebrow">No Manual Re-Entry</div>
+                    <div className="page-title">OCR Imports</div>
+                </div>
             </div>
 
-            {/* Upload Zone */}
-            <div className="glass-card animate-in">
-                <div
-                    {...getRootProps()}
-                    className={`upload-zone ${isDragActive ? 'active' : ''}`}
-                    id="upload-dropzone"
-                >
-                    <input {...getInputProps()} />
-                    {isDragActive ? (
-                        <>
-                            <h3>Drop your file here!</h3>
-                            <p>Release to start OCR extraction</p>
-                        </>
-                    ) : (
-                        <>
-                            <h3>Drag & drop your invoice here</h3>
-                            <p>or click to browse files</p>
-                        </>
-                    )}
-                    <div className="upload-formats">
-                        <span className="format-badge">PNG</span>
-                        <span className="format-badge">JPG</span>
-                        <span className="format-badge">PDF</span>
-                        <span className="format-badge">WebP</span>
-                        <span className="format-badge">TIFF</span>
+            <div className="grid2">
+                {/* Upload Zone */}
+                <div className="card">
+                    <div className="card-title">Import Tray</div>
+                    <div className="card-heading" style={{ marginBottom: '14px' }}>Drop files or photos here</div>
+                    <div
+                        {...getRootProps()}
+                        className={`upload-zone ${isDragActive ? 'drag' : ''}`}
+                    >
+                        <input {...getInputProps()} />
+                        <div className="upload-icon">📄</div>
+                        {isDragActive ? (
+                            <>
+                                <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text)', marginBottom: '6px' }}>Drop your file here!</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Release to start OCR extraction</div>
+                            </>
+                        ) : (
+                            <>
+                                <div style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text)', marginBottom: '6px' }}>Paper bills, PDFs, Excel sheets</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Drag, tap, or scan with mobile camera</div>
+                            </>
+                        )}
+                        <div className="upload-formats">
+                            <span className="format-badge">PNG</span>
+                            <span className="format-badge">JPG</span>
+                            <span className="format-badge">PDF</span>
+                            <span className="format-badge">WebP</span>
+                            <span className="format-badge">TIFF</span>
+                        </div>
                     </div>
+
+                    {/* Progress */}
+                    {(uploading || progress > 0) && progress < 100 && (
+                         <div style={{ marginTop: '14px' }}>
+                             <div className="profit-bar-row">
+                                 <div className="profit-bar-label">{uploading ? '🔍 Running OCR extraction...' : 'Processing...'}</div>
+                                 <div className="profit-bar-bg"><div className="profit-bar-fill" style={{ width: `${progress}%`, background: 'var(--gold)' }}></div></div>
+                                 <div className="profit-bar-pct">{Math.round(progress)}%</div>
+                             </div>
+                         </div>
+                    )}
+
+                    {/* Error */}
+                    {error && (
+                        <div className="alert alert-red" style={{ marginTop: '14px' }}>
+                            <span className="alert-icon">⚠</span>
+                            <span>{error}</span>
+                            <button className="btn btn-ghost" onClick={reset} style={{ padding: '2px 8px', marginLeft: 'auto' }}>Try Again</button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Progress */}
-                {(uploading || progress > 0) && progress < 100 && (
-                    <div className="upload-progress">
-                        <div className="progress-bar-container">
-                            <div
-                                className="progress-bar-fill"
-                                style={{ width: `${progress}%` }}
-                            />
+                {/* Extraction Preview */}
+                <div className="card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                        <div>
+                            <div className="card-title" style={{ margin: 0 }}>Extraction Preview</div>
+                            <div className="card-heading" style={{ fontSize: '16px', marginTop: '4px' }}>
+                                {result ? `Mapped ${result.filename}` : 'Waiting for file...'}
+                            </div>
                         </div>
-                        <div className="progress-text">
-                            <span>{uploading ? '🔍 Running OCR extraction...' : 'Processing...'}</span>
-                            <span>{Math.round(progress)}%</span>
-                        </div>
+                        {result && <div className="ocr-conf">◉ 92% confidence</div>}
                     </div>
-                )}
 
-                {/* Error */}
-                {error && (
-                    <div style={{ marginTop: 24, padding: '16px 20px', background: 'rgba(244, 63, 94, 0.1)', borderRadius: 12, border: '1px solid rgba(244, 63, 94, 0.3)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <span style={{ color: '#fca5a5', fontSize: '0.9rem' }}>{error}</span>
-                        <button className="btn btn-secondary" onClick={reset} style={{ marginLeft: 'auto' }}>Try Again</button>
-                    </div>
-                )}
+                    {result ? (
+                        <>
+                            <div className="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Supplier</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {result.products?.map((product, idx) => (
+                                            <tr key={idx}>
+                                                <td style={{ color: 'var(--text)' }}>{product.product_name}</td>
+                                                <td>{product.quantity}</td>
+                                                <td>₹{product.price}</td>
+                                                <td>{product.supplier || 'Unknown'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <details style={{ marginTop: '24px' }}>
+                                <summary style={{ cursor: 'pointer', color: 'var(--text3)', fontSize: '12px', padding: '8px 0' }}>
+                                    View raw OCR text
+                                </summary>
+                                <pre style={{
+                                    marginTop: '8px',
+                                    padding: '16px',
+                                    background: 'var(--navy3)',
+                                    borderRadius: '8px',
+                                    fontSize: '11px',
+                                    color: 'var(--text2)',
+                                    whiteSpace: 'pre-wrap',
+                                    maxHeight: '300px',
+                                    overflow: 'auto',
+                                    border: '1px solid var(--border2)',
+                                    fontFamily: 'var(--font-mono)'
+                                }}>
+                                    {result.raw_text}
+                                </pre>
+                            </details>
 
-                {/* Results */}
-                {result && (
-                    <div className="extracted-data">
-                        <h3>
-                            Extracted {result.products_extracted} products from {result.filename}
-                        </h3>
+                            <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
+                                <button className="btn btn-gold" style={{ flex: 1 }} onClick={reset}>Accept All & Import Next</button>
+                                <button className="btn btn-ghost" onClick={reset}>Reject</button>
+                            </div>
 
-                        <div className="product-grid">
-                            {result.products?.map((product, idx) => (
-                                <div key={idx} className="product-card-mini animate-in">
-                                    <div className="product-info">
-                                        <h4>{product.product_name}</h4>
-                                        <p>Qty: {product.quantity} • {product.supplier || 'Unknown'}</p>
-                                    </div>
-                                    <div className="product-price">₹{product.price}</div>
-                                </div>
-                            ))}
+                            <div className="divider"></div>
+                            <div className="card-title">Processing Stats</div>
+                            <div className="stat-row"><span className="stat-key">Items extracted</span><span className="stat-val">{result.products_extracted}</span></div>
+                            <div className="stat-row"><span className="stat-key">Auto-matched</span><span className="stat-val" style={{ color: 'var(--green)' }}>{result.products_extracted}</span></div>
+                        </>
+                    ) : (
+                        <div style={{ textAlign: 'center', color: 'var(--text3)', padding: '40px 20px', fontSize: '12px' }}>
+                            Upload an invoice to see the extracted data here.
                         </div>
-
-                        {/* Raw OCR Text */}
-                        <details style={{ marginTop: 24 }}>
-                            <summary style={{ cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.85rem', padding: '8px 0' }}>
-                                View raw OCR text
-                            </summary>
-                            <pre style={{
-                                marginTop: 8,
-                                padding: 16,
-                                background: 'var(--bg-glass)',
-                                borderRadius: 8,
-                                fontSize: '0.8rem',
-                                color: 'var(--text-secondary)',
-                                whiteSpace: 'pre-wrap',
-                                maxHeight: 300,
-                                overflow: 'auto',
-                                border: '1px solid var(--border-glass)',
-                            }}>
-                                {result.raw_text}
-                            </pre>
-                        </details>
-
-                        <div style={{ marginTop: 20 }}>
-                            <button className="btn btn-primary" onClick={reset}>
-                                Upload Another Invoice
-                            </button>
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

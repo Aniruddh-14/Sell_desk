@@ -54,7 +54,7 @@ export default function Auth() {
     return (
         <div style={{
             display: 'flex', minHeight: '100vh',
-            background: 'linear-gradient(135deg, #3A3A3A 0%, #4A4A4A 50%, #5C5C5C 100%)',
+            background: 'var(--navy2)',
         }}>
             {/* ═══════════════════════════════════
                 LEFT — Tagline & Branding
@@ -75,7 +75,7 @@ export default function Auth() {
                     style={{
                         position: 'absolute', top: '12%', left: '8%',
                         width: 120, height: 120, borderRadius: '50%',
-                        background: 'radial-gradient(circle, rgba(109,129,150,0.15) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, var(--gold-dim) 0%, transparent 70%)',
                         pointerEvents: 'none',
                     }}
                 />
@@ -84,16 +84,7 @@ export default function Auth() {
                     style={{
                         position: 'absolute', bottom: '15%', right: '12%',
                         width: 180, height: 180, borderRadius: '50%',
-                        background: 'radial-gradient(circle, rgba(203,203,203,0.08) 0%, transparent 70%)',
-                        pointerEvents: 'none',
-                    }}
-                />
-                <motion.div
-                    animate={{ ...floatAnim, transition: { ...floatAnim.transition, delay: 0.8 } }}
-                    style={{
-                        position: 'absolute', top: '55%', left: '60%',
-                        width: 80, height: 80, borderRadius: '50%',
-                        background: 'radial-gradient(circle, rgba(109,129,150,0.1) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, var(--navy4) 0%, transparent 70%)',
                         pointerEvents: 'none',
                     }}
                 />
@@ -102,12 +93,12 @@ export default function Auth() {
                 <motion.div variants={fadeUp} custom={0} style={{ marginBottom: '2rem' }}>
                     <div style={{
                         width: 56, height: 56,
-                        background: 'linear-gradient(135deg, #6D8196, #8A9BAC)',
+                        background: 'var(--navy4)',
+                        border: '1px solid var(--gold-border)',
                         borderRadius: 16, display: 'flex',
                         alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 12px 32px rgba(109,129,150,0.3)',
                     }}>
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFFFE3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                     </div>
@@ -117,8 +108,9 @@ export default function Auth() {
                 <div style={{
                     fontSize: '3.2rem', fontWeight: 800,
                     lineHeight: 1.15, letterSpacing: '-2px',
-                    color: '#FFFFE3', marginBottom: '1.25rem',
+                    color: 'var(--text)', marginBottom: '1.25rem',
                     maxWidth: 480, position: 'relative',
+                    fontFamily: 'var(--font-heading)'
                 }}>
                     {/* "Smart" */}
                     <motion.span
@@ -150,27 +142,12 @@ export default function Auth() {
                             animate={{ backgroundPosition: ['0% 50%', '200% 50%'] }}
                             transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
                             style={{
-                                background: 'linear-gradient(90deg, #8A9BAC, #CBCBCB, #FFFFE3, #8A9BAC, #CBCBCB)',
-                                backgroundSize: '200% 100%',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text',
+                                color: 'var(--gold)',
+                                textShadow: '0 0 16px var(--gold-glow)'
                             }}
                         >
                             Analytics.
                         </motion.span>
-                        {/* Glowing underline */}
-                        <motion.div
-                            initial={{ scaleX: 0, opacity: 0 }}
-                            animate={{ scaleX: 1, opacity: 1 }}
-                            transition={{ duration: 0.8, delay: 1.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-                            style={{
-                                position: 'absolute', bottom: -4, left: 0, right: 0,
-                                height: 3, borderRadius: 2, transformOrigin: 'left',
-                                background: 'linear-gradient(90deg, #6D8196, #8A9BAC, transparent)',
-                                boxShadow: '0 0 12px rgba(109,129,150,0.4)',
-                            }}
-                        />
                     </motion.span>
                 </div>
 
@@ -178,7 +155,7 @@ export default function Auth() {
                     variants={fadeUp}
                     custom={2}
                     style={{
-                        fontSize: '1.15rem', color: 'rgba(203,203,203,0.75)',
+                        fontSize: '1.15rem', color: 'var(--text2)',
                         lineHeight: 1.7, maxWidth: 420, marginBottom: '2.5rem',
                     }}
                 >
@@ -195,9 +172,9 @@ export default function Auth() {
                     {['Gemini AI OCR', 'Auto Reconciliation', 'Smart Insights', 'ITR Reports'].map((tag) => (
                         <span key={tag} style={{
                             padding: '0.4rem 1rem', borderRadius: 24,
-                            background: 'rgba(109,129,150,0.15)',
-                            border: '1px solid rgba(109,129,150,0.25)',
-                            color: 'rgba(255,255,227,0.8)', fontSize: '0.82rem',
+                            background: 'var(--navy3)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text)', fontSize: '0.82rem',
                             fontWeight: 500, letterSpacing: '0.3px',
                         }}>
                             {tag}
@@ -211,7 +188,7 @@ export default function Auth() {
                     custom={4}
                     style={{
                         marginTop: 'auto', paddingTop: '3rem',
-                        fontSize: '0.78rem', color: 'rgba(203,203,203,0.35)',
+                        fontSize: '0.78rem', color: 'var(--text3)',
                         letterSpacing: '0.5px',
                     }}
                 >
@@ -226,9 +203,9 @@ export default function Auth() {
                 width: '480px', minWidth: '380px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: '2rem',
-                background: 'rgba(255, 255, 227, 0.97)',
-                borderLeft: '1px solid rgba(109,129,150,0.15)',
-                boxShadow: '-8px 0 40px rgba(0,0,0,0.1)',
+                background: 'var(--navy)',
+                borderLeft: '1px solid var(--border)',
+                boxShadow: '-8px 0 40px rgba(0,0,0,0.5)',
             }}>
                 <motion.div
                     initial={{ opacity: 0, x: 30 }}
@@ -248,11 +225,12 @@ export default function Auth() {
                         >
                             <h2 style={{
                                 fontSize: '1.75rem', fontWeight: 700,
-                                color: '#4A4A4A', marginBottom: '0.5rem',
+                                color: 'var(--text)', marginBottom: '0.5rem',
+                                fontFamily: 'var(--font-heading)'
                             }}>
                                 {isLogin ? 'Welcome back' : 'Create account'}
                             </h2>
-                            <p style={{ color: '#6B6B6B', fontSize: '0.95rem' }}>
+                            <p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>
                                 {isLogin
                                     ? 'Enter your credentials to access FinSight-OCR'
                                     : 'Sign up to start analyzing your invoices'}
@@ -268,10 +246,10 @@ export default function Auth() {
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
                                 style={{
-                                    background: 'rgba(180, 60, 60, 0.06)',
-                                    border: '1px solid rgba(180, 60, 60, 0.15)',
-                                    color: '#8B3A3A', padding: '0.75rem 1rem',
-                                    borderRadius: 10, marginBottom: '1.5rem',
+                                    background: 'var(--red-dim)',
+                                    border: '1px solid rgba(224,92,92,0.3)',
+                                    color: '#ff9a9a', padding: '0.75rem 1rem',
+                                    borderRadius: 8, marginBottom: '1.5rem',
                                     fontSize: '0.9rem', textAlign: 'center',
                                     overflow: 'hidden',
                                 }}
@@ -285,7 +263,7 @@ export default function Auth() {
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div>
                             <label style={{
-                                display: 'block', color: '#6B6B6B',
+                                display: 'block', color: 'var(--text2)',
                                 fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600,
                             }}>
                                 Email Address
@@ -297,21 +275,22 @@ export default function Auth() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 style={{
                                     width: '100%', padding: '0.875rem 1rem',
-                                    background: 'rgba(74, 74, 74, 0.04)',
-                                    border: '1px solid rgba(74, 74, 74, 0.15)',
-                                    borderRadius: 10, color: '#4A4A4A',
+                                    background: 'var(--navy3)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: 8, color: 'var(--text)',
                                     fontSize: '0.95rem', outline: 'none',
                                     transition: 'border-color 0.2s, box-shadow 0.2s',
+                                    boxSizing: 'border-box'
                                 }}
-                                onFocus={(e) => { e.target.style.borderColor = '#6D8196'; e.target.style.boxShadow = '0 0 0 3px rgba(109,129,150,0.1)'; }}
-                                onBlur={(e) => { e.target.style.borderColor = 'rgba(74,74,74,0.15)'; e.target.style.boxShadow = 'none'; }}
+                                onFocus={(e) => { e.target.style.borderColor = 'var(--gold)'; }}
+                                onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                                 placeholder="you@example.com"
                             />
                         </div>
 
                         <div>
                             <label style={{
-                                display: 'block', color: '#6B6B6B',
+                                display: 'block', color: 'var(--text2)',
                                 fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600,
                             }}>
                                 Password
@@ -323,37 +302,32 @@ export default function Auth() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 style={{
                                     width: '100%', padding: '0.875rem 1rem',
-                                    background: 'rgba(74, 74, 74, 0.04)',
-                                    border: '1px solid rgba(74, 74, 74, 0.15)',
-                                    borderRadius: 10, color: '#4A4A4A',
+                                    background: 'var(--navy3)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: 8, color: 'var(--text)',
                                     fontSize: '0.95rem', outline: 'none',
                                     transition: 'border-color 0.2s, box-shadow 0.2s',
+                                    boxSizing: 'border-box'
                                 }}
-                                onFocus={(e) => { e.target.style.borderColor = '#6D8196'; e.target.style.boxShadow = '0 0 0 3px rgba(109,129,150,0.1)'; }}
-                                onBlur={(e) => { e.target.style.borderColor = 'rgba(74,74,74,0.15)'; e.target.style.boxShadow = 'none'; }}
+                                onFocus={(e) => { e.target.style.borderColor = 'var(--gold)'; }}
+                                onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                                 placeholder="••••••••"
                             />
                         </div>
 
-                        <motion.button
+                        <button
                             type="submit"
                             disabled={loading}
-                            whileHover={!loading ? { scale: 1.015, y: -1 } : {}}
-                            whileTap={!loading ? { scale: 0.985 } : {}}
+                            className="btn btn-gold"
                             style={{
                                 width: '100%', padding: '0.875rem', marginTop: '0.5rem',
-                                background: 'linear-gradient(135deg, #6D8196, #8A9BAC)',
-                                border: 'none', borderRadius: 10, color: '#FFFFE3',
                                 fontSize: '1rem', fontWeight: 600,
                                 cursor: loading ? 'not-allowed' : 'pointer',
                                 opacity: loading ? 0.7 : 1,
-                                transition: 'opacity 0.2s, box-shadow 0.2s',
-                                boxShadow: '0 4px 16px rgba(109,129,150,0.3)',
-                                letterSpacing: '0.3px',
                             }}
                         >
                             {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
-                        </motion.button>
+                        </button>
                     </form>
 
                     {/* Toggle */}
@@ -361,12 +335,10 @@ export default function Auth() {
                         <button
                             onClick={() => { setIsLogin(!isLogin); setError(''); }}
                             style={{
-                                background: 'none', border: 'none', color: '#6D8196',
+                                background: 'none', border: 'none', color: 'var(--gold)',
                                 fontSize: '0.9rem', cursor: 'pointer', fontWeight: 500,
                                 transition: 'color 0.2s',
                             }}
-                            onMouseEnter={(e) => e.target.style.color = '#4A5E6E'}
-                            onMouseLeave={(e) => e.target.style.color = '#6D8196'}
                         >
                             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
                         </button>

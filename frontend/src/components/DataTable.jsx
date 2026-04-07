@@ -62,8 +62,12 @@ export default function DataTable() {
         });
 
     const getCategoryClass = (cat) => {
-        if (!cat) return '';
-        return cat.toLowerCase().replace(/\s+/g, '-');
+        if (!cat) return 'tag';
+        const str = cat.toLowerCase();
+        if (str.includes('food') || str.includes('grocery')) return 'tag tag-green';
+        if (str.includes('electronics')) return 'tag tag-blue';
+        if (str.includes('health') || str.includes('pharmacy')) return 'tag tag-red';
+        return 'tag tag-gold';
     };
 
     const sortIndicator = (field) => {
@@ -74,11 +78,15 @@ export default function DataTable() {
     if (loading) {
         return (
             <div>
-                <div className="page-header">
-                    <h2> Product Data</h2>
-                    <p>Loading products...</p>
-                </div>
-                <div className="loading-spinner" />
+                 <div className="page-header">
+                     <div>
+                         <div className="page-eyebrow">Inventory Database</div>
+                         <div className="page-title">Product Data</div>
+                     </div>
+                 </div>
+                 <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+                     <div style={{ color: 'var(--text3)' }}>Loading products...</div>
+                 </div>
             </div>
         );
     }
@@ -86,39 +94,38 @@ export default function DataTable() {
     return (
         <div>
             <div className="page-header">
-                <h2>🗃️ Product Data</h2>
-                <p>View and manage all extracted product data • {products.length} products</p>
+                <div>
+                    <div className="page-eyebrow">Inventory Database</div>
+                    <div className="page-title">Products & Profit</div>
+                </div>
+                <div className="page-actions">
+                    <button className="btn btn-ghost" onClick={loadProducts}>Refresh</button>
+                    <button className="btn btn-gold" onClick={handleExport}>Export CSV</button>
+                </div>
             </div>
 
-            <div className="glass-card animate-in">
-                <div className="table-header">
-                    <div className="search-box">
-                        <input
-                            type="text"
-                            id="product-search"
-                            placeholder="Search products, suppliers, categories..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-                    <div className="table-actions">
-                        <button className="btn btn-secondary" onClick={loadProducts} id="refresh-data">
-                            Refresh
-                        </button>
-                        <button className="btn btn-success" onClick={handleExport} id="export-csv">
-                            Export CSV
-                        </button>
-                    </div>
+            <div className="card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                     <div className="card-title" style={{ margin: 0 }}>All Products ({products.length})</div>
+                     <div className="search-bar" style={{ margin: 0, width: '250px' }}>
+                         <span className="search-icon">🔍</span>
+                         <input
+                             type="text"
+                             placeholder="Search inventory..."
+                             value={search}
+                             onChange={(e) => setSearch(e.target.value)}
+                         />
+                     </div>
                 </div>
 
                 {filtered.length === 0 ? (
-                    <div className="empty-state">
-                        <h3>No products found</h3>
-                        <p>{search ? 'Try a different search term' : 'Upload some invoices to see product data'}</p>
+                    <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text3)' }}>
+                        <div style={{ marginBottom: '8px' }}>No products found</div>
+                        <div style={{ fontSize: '12px' }}>{search ? 'Try a different search term' : 'Upload some invoices to see product data'}</div>
                     </div>
                 ) : (
-                    <div className="data-table-wrap">
-                        <table className="data-table" id="products-table">
+                    <div className="table-wrap">
+                        <table>
                             <thead>
                                 <tr>
                                     <th onClick={() => handleSort('product_name')} style={{ cursor: 'pointer' }}>
@@ -142,15 +149,15 @@ export default function DataTable() {
                             <tbody>
                                 {filtered.map((p, idx) => (
                                     <tr key={p.id || idx}>
-                                        <td style={{ fontWeight: 500 }}>{p.product_name}</td>
-                                        <td>{p.quantity}</td>
-                                        <td>₹{parseFloat(p.price).toLocaleString()}</td>
-                                        <td style={{ color: '#6D8196', fontWeight: 600 }}>
+                                        <td style={{ color: 'var(--text)', fontWeight: 500 }}>{p.product_name}</td>
+                                        <td style={{ fontFamily: 'var(--font-mono)' }}>{p.quantity}</td>
+                                        <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>₹{parseFloat(p.price).toLocaleString()}</td>
+                                        <td style={{ fontFamily: 'var(--font-mono)' }}>
                                             ₹{(parseFloat(p.price) * parseInt(p.quantity)).toLocaleString()}
                                         </td>
-                                        <td style={{ color: 'var(--text-secondary)' }}>{p.supplier || '—'}</td>
+                                        <td>{p.supplier || '—'}</td>
                                         <td>
-                                            <span className={`category-badge ${getCategoryClass(p.category)}`}>
+                                            <span className={getCategoryClass(p.category)}>
                                                 {p.category || 'General'}
                                             </span>
                                         </td>

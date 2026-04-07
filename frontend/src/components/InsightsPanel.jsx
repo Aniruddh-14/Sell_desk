@@ -34,11 +34,14 @@ export default function InsightsPanel() {
         return (
             <div>
                 <div className="page-header">
-                    <h2>AI Insights</h2>
-                    <p>Gemini is analyzing your data...</p>
+                    <div>
+                         <div className="page-eyebrow">Smart Recommendations</div>
+                         <div className="page-title">AI Insights</div>
+                    </div>
                 </div>
-                <div className="loading-spinner" />
-                <p className="loading-text">Generating smart recommendations...</p>
+                <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+                     <div style={{ color: 'var(--text3)' }}>Gemini is analyzing your data...</div>
+                </div>
             </div>
         );
     }
@@ -46,47 +49,41 @@ export default function InsightsPanel() {
     return (
         <div>
             <div className="page-header">
-                <h2>AI Insights</h2>
-                <p>Smart recommendations powered by Google Gemini</p>
-            </div>
-
-            {/* Actions */}
-            <div className="insights-actions">
-                <select
-                    className="festival-select"
-                    value={festival}
-                    onChange={handleFestivalChange}
-                    id="festival-select"
-                >
-                    <option value="">All Festivals</option>
-                    <option value="Diwali"> Diwali</option>
-                    <option value="Holi"> Holi</option>
-                    <option value="Navratri"> Navratri</option>
-                    <option value="Eid"> Eid</option>
-                    <option value="Christmas"> Christmas</option>
-                    <option value="Pongal"> Pongal</option>
-                    <option value="Raksha Bandhan"> Raksha Bandhan</option>
-                </select>
-                <button
-                    className="btn btn-primary"
-                    onClick={() => loadInsights()}
-                    id="refresh-insights"
-                >
-                    Regenerate Insights
-                </button>
+                <div>
+                     <div className="page-eyebrow">Smart Recommendations</div>
+                     <div className="page-title">AI Insights</div>
+                </div>
+                <div className="page-actions">
+                    <select
+                        value={festival}
+                        onChange={handleFestivalChange}
+                        style={{ padding: '8px 12px', background: 'var(--navy3)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px' }}
+                    >
+                        <option value="">All Festivals</option>
+                        <option value="Diwali">Diwali</option>
+                        <option value="Holi">Holi</option>
+                        <option value="Navratri">Navratri</option>
+                        <option value="Eid">Eid</option>
+                        <option value="Christmas">Christmas</option>
+                        <option value="Pongal">Pongal</option>
+                        <option value="Raksha Bandhan">Raksha Bandhan</option>
+                    </select>
+                    <button className="btn btn-gold" onClick={() => loadInsights()}>Regenerate Insights</button>
+                </div>
             </div>
 
             {insights && (
-                <div className="insights-grid">
+                <div className="grid2">
                     {/* Stock More */}
                     {insights.stock_more?.length > 0 && (
-                        <div className="glass-card insight-card stock-more animate-in">
-                            <div className="insight-card-header">
-                                <h3>Products to Stock More</h3>
+                        <div className="insight-block">
+                            <div className="insight-header">
+                                <div className="insight-icon green">📈</div>
+                                <div className="insight-title">Products to Stock More</div>
                             </div>
-                            <ul className="insight-list">
+                            <ul className="insight-body" style={{ margin: 0, paddingLeft: '24px' }}>
                                 {insights.stock_more.map((item, idx) => (
-                                    <li key={idx}>{item}</li>
+                                    <li key={idx} style={{ marginBottom: '8px' }}>{item}</li>
                                 ))}
                             </ul>
                         </div>
@@ -94,13 +91,14 @@ export default function InsightsPanel() {
 
                     {/* Products to Avoid */}
                     {insights.products_to_avoid?.length > 0 && (
-                        <div className="glass-card insight-card avoid animate-in">
-                            <div className="insight-card-header">
-                                <h3>Products to Avoid</h3>
+                        <div className="insight-block">
+                            <div className="insight-header">
+                                <div className="insight-icon red">📉</div>
+                                <div className="insight-title">Products to Avoid</div>
                             </div>
-                            <ul className="insight-list">
+                            <ul className="insight-body" style={{ margin: 0, paddingLeft: '24px' }}>
                                 {insights.products_to_avoid.map((item, idx) => (
-                                    <li key={idx}>{item}</li>
+                                    <li key={idx} style={{ marginBottom: '8px' }}>{item}</li>
                                 ))}
                             </ul>
                         </div>
@@ -108,13 +106,14 @@ export default function InsightsPanel() {
 
                     {/* Festival Recommendations */}
                     {insights.festival_recommendations?.length > 0 && (
-                        <div className="glass-card insight-card festival animate-in">
-                            <div className="insight-card-header">
-                                <h3>Festival Recommendations</h3>
+                        <div className="insight-block">
+                            <div className="insight-header">
+                                <div className="insight-icon gold">🎉</div>
+                                <div className="insight-title">Festival Recommendations</div>
                             </div>
-                            <ul className="insight-list">
+                            <ul className="insight-body" style={{ margin: 0, paddingLeft: '24px' }}>
                                 {insights.festival_recommendations.map((item, idx) => (
-                                    <li key={idx}>{item}</li>
+                                    <li key={idx} style={{ marginBottom: '8px' }}>{item}</li>
                                 ))}
                             </ul>
                         </div>
@@ -122,13 +121,14 @@ export default function InsightsPanel() {
 
                     {/* General Insights */}
                     {insights.general_insights?.length > 0 && (
-                        <div className="glass-card insight-card general animate-in">
-                            <div className="insight-card-header">
-                                <h3>Business Insights</h3>
+                        <div className="insight-block">
+                            <div className="insight-header">
+                                <div className="insight-icon">💡</div>
+                                <div className="insight-title">Business Insights</div>
                             </div>
-                            <ul className="insight-list">
+                            <ul className="insight-body" style={{ margin: 0, paddingLeft: '24px' }}>
                                 {insights.general_insights.map((item, idx) => (
-                                    <li key={idx}>{item}</li>
+                                    <li key={idx} style={{ marginBottom: '8px' }}>{item}</li>
                                 ))}
                             </ul>
                         </div>

@@ -77,6 +77,7 @@ function MainApp() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [showNotifs, setShowNotifs] = useState(false);
     const [dashData, setDashData] = useState(null);
+    const [currentTime, setCurrentTime] = useState('');
     const notifRef = useRef(null);
 
     /* Fetch dashboard data for notifications */
@@ -85,6 +86,20 @@ function MainApp() {
             getDashboard().then(setDashData).catch(() => { });
         }
     }, [user]);
+
+    /* Clock */
+    useEffect(() => {
+        const updateClock = () => {
+            const n = new Date();
+            const h = n.getHours(), m = n.getMinutes();
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const hh = h % 12 || 12;
+            setCurrentTime(`${hh}:${String(m).padStart(2,'0')} ${ampm} IST`);
+        };
+        updateClock();
+        const timer = setInterval(updateClock, 30000);
+        return () => clearInterval(timer);
+    }, []);
 
     /* Close dropdown on outside click */
     useEffect(() => {
@@ -112,48 +127,59 @@ function MainApp() {
             case 'calendar': return <CalendarPage />;
             case 'insights': return <InsightsPanel />;
             case 'reports': return <ReportsITR />;
+            // Future Tabs placeholders
+            case 'ads': return <div className="page active"><div className="page-header"><div className="page-title">Ad Studio</div></div><div className="card">Ad Studio is coming soon...</div></div>;
+            case 'franchise': return <div className="page active"><div className="page-header"><div className="page-title">Franchise HQ</div></div><div className="card">Franchise HQ coming soon...</div></div>;
+            case 'website': return <div className="page active"><div className="page-header"><div className="page-title">Website Builder</div></div><div className="card">Website Builder coming soon...</div></div>;
+            case 'pricing': return <div className="page active"><div className="page-header"><div className="page-title">Pricing Plans</div></div><div className="card">Pricing Plans coming soon...</div></div>;
             default: return <Dashboard />;
         }
     };
 
     return (
         <div className="app-layout">
-            <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-            <main className="main-content">
-                {/* ── Top Bar: Notification Bell + Logout ── */}
-                <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-                    gap: '0.75rem', marginBottom: '1rem', paddingBottom: '0.75rem',
-                    borderBottom: '1px solid rgba(74,74,74,0.08)',
-                }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                        {user.email}
-                    </span>
+            <div className="topbar">
+                <div className="logo-wrap">
+                    <div className="logo-mark">BP</div>
+                    <div>
+                        <div className="logo-text">BillSmart Pro</div>
+                        <div className="logo-sub">CLASSIC BUSINESS CONSOLE</div>
+                    </div>
+                </div>
+                <div className="topbar-right">
+                    <div className="top-badge green">☁ Cloud Sync Active</div>
+                    <div className="top-badge">GST Ready</div>
+                    <select id="store-select" style={{width:'auto',fontSize:'11px',padding:'5px 10px',background:'var(--navy3)',borderColor:'var(--border2)',color:'var(--text2)',borderRadius:'20px'}}>
+                        <option>Retail Store</option>
+                        <option>Cafe / Restaurant</option>
+                        <option>Supermarket</option>
+                        <option>Pharmacy</option>
+                    </select>
+                    <div className="time-chip" id="live-clock">{currentTime}</div>
 
                     {/* ── Bell Icon + Dropdown ── */}
                     <div ref={notifRef} style={{ position: 'relative' }}>
                         <button
                             onClick={() => setShowNotifs(!showNotifs)}
                             style={{
-                                position: 'relative', width: 38, height: 38, borderRadius: 10,
-                                background: showNotifs ? 'rgba(109,129,150,0.12)' : 'rgba(74,74,74,0.06)',
-                                border: '1px solid rgba(74,74,74,0.1)', cursor: 'pointer',
+                                position: 'relative', width: 34, height: 34, borderRadius: 8,
+                                background: showNotifs ? 'var(--navy3)' : 'var(--navy4)',
+                                border: '1px solid var(--border)', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                transition: 'all 0.2s',
+                                transition: 'all 0.2s', marginLeft: '10px'
                             }}
                         >
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={showNotifs ? '#6D8196' : '#6B6B6B'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={showNotifs ? 'var(--gold)' : 'var(--text3)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                             </svg>
                             {notifications.length > 0 && (
                                 <span style={{
                                     position: 'absolute', top: -3, right: -3,
-                                    width: 18, height: 18, borderRadius: '50%',
-                                    background: '#6D8196', color: '#FFFFE3',
+                                    width: 16, height: 16, borderRadius: '50%',
+                                    background: 'var(--red)', color: '#fff',
                                     fontSize: '0.6rem', fontWeight: 700,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    border: '2px solid var(--bg-primary)',
                                 }}>
                                     {notifications.length}
                                 </span>
@@ -163,34 +189,32 @@ function MainApp() {
                         {/* ── Notification Dropdown Overlay ── */}
                         {showNotifs && (
                             <div style={{
-                                position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                                position: 'absolute', top: 'calc(100% + 12px)', right: 0,
                                 width: 380, maxHeight: 480, overflowY: 'auto',
-                                background: '#FFFFE3', borderRadius: 14,
-                                border: '1px solid rgba(74,74,74,0.1)',
-                                boxShadow: '0 20px 60px rgba(74,74,74,0.18), 0 4px 12px rgba(74,74,74,0.08)',
+                                background: 'var(--navy3)', borderRadius: 14,
+                                border: '1px solid var(--border)',
+                                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
                                 zIndex: 1000, padding: '0',
+                                color: 'var(--text)'
                             }}>
-                                {/* Dropdown header */}
                                 <div style={{
-                                    padding: '1rem 1.25rem', borderBottom: '1px solid rgba(74,74,74,0.08)',
+                                    padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)',
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                 }}>
-                                    <span style={{ fontSize: '0.92rem', fontWeight: 600, color: '#4A4A4A' }}>
+                                    <span style={{ fontSize: '0.92rem', fontWeight: 600 }}>
                                         Smart Inventory Alerts
                                     </span>
                                     <span style={{
                                         padding: '2px 8px', borderRadius: 10,
-                                        background: 'rgba(109,129,150,0.1)',
-                                        fontSize: '0.72rem', fontWeight: 600, color: '#6D8196',
+                                        background: 'var(--card2)',
+                                        fontSize: '0.72rem', fontWeight: 600, color: 'var(--text2)',
                                     }}>
                                         {notifications.length} new
                                     </span>
                                 </div>
-
-                                {/* Notifications list */}
                                 <div style={{ padding: '0.5rem' }}>
                                     {notifications.length === 0 ? (
-                                        <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#9A9A9A', fontSize: '0.88rem' }}>
+                                        <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text3)', fontSize: '0.88rem' }}>
                                             All clear — no alerts right now
                                         </div>
                                     ) : notifications.map((n) => (
@@ -199,16 +223,13 @@ function MainApp() {
                                             style={{
                                                 display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
                                                 padding: '0.85rem 0.75rem', borderRadius: 10,
-                                                background: n.bg,
-                                                marginBottom: 4, cursor: 'default',
-                                                transition: 'background 0.15s',
+                                                background: 'var(--card)', border: '1px solid var(--border)',
+                                                marginBottom: 4, cursor: 'default'
                                             }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(109,129,150,0.08)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = n.bg}
                                         >
                                             <div style={{
                                                 width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-                                                background: `${n.color}18`, display: 'flex',
+                                                background: n.color + '20', display: 'flex',
                                                 alignItems: 'center', justifyContent: 'center',
                                             }}>
                                                 <div style={{
@@ -217,10 +238,10 @@ function MainApp() {
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-                                                    <span style={{ fontSize: '0.84rem', fontWeight: 600, color: '#4A4A4A' }}>{n.title}</span>
-                                                    <span style={{ fontSize: '0.68rem', color: '#9A9A9A', flexShrink: 0, marginLeft: 8 }}>{n.time}</span>
+                                                    <span style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text)' }}>{n.title}</span>
+                                                    <span style={{ fontSize: '0.68rem', color: 'var(--text3)', flexShrink: 0, marginLeft: 8 }}>{n.time}</span>
                                                 </div>
-                                                <p style={{ margin: 0, fontSize: '0.78rem', color: '#6B6B6B', lineHeight: 1.5 }}>{n.body}</p>
+                                                <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text2)', lineHeight: 1.5 }}>{n.body}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -228,43 +249,21 @@ function MainApp() {
                             </div>
                         )}
                     </div>
-
-                    {/* ── Logout Button ── */}
+                    
                     <button
+                        className="btn btn-ghost"
                         onClick={() => signOut()}
-                        style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                            padding: '0.5rem 1.1rem', borderRadius: '8px',
-                            background: 'rgba(74,74,74,0.06)',
-                            border: '1px solid rgba(74,74,74,0.12)',
-                            color: 'var(--text-secondary)', fontSize: '0.84rem',
-                            fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                            transition: 'all 0.2s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(109,129,150,0.12)';
-                            e.currentTarget.style.borderColor = 'rgba(109,129,150,0.25)';
-                            e.currentTarget.style.color = '#4A4A4A';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'rgba(74,74,74,0.06)';
-                            e.currentTarget.style.borderColor = 'rgba(74,74,74,0.12)';
-                            e.currentTarget.style.color = 'var(--text-secondary)';
-                        }}
+                        style={{ marginLeft: '4px', padding: '6px 12px' }}
                     >
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
-                        </svg>
-                        Logout
+                        Sign Out
                     </button>
                 </div>
+            </div>
 
-                <div className="page-content">
-                    {renderPage()}
-                </div>
-            </main>
+            <Sidebar activeTab={activeTab} onTabChange={setActiveTab} dashData={dashData} />
+            <div className="main">
+                {renderPage()}
+            </div>
         </div>
     );
 }

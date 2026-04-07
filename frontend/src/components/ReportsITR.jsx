@@ -23,62 +23,74 @@ export default function ReportsITR() {
     if (loading) {
         return (
             <div>
-                <div className="page-header">
-                    <h2>Reports & ITR</h2>
-                    <p>Compiling financial statements...</p>
-                </div>
-                <div className="loading-spinner" />
+                 <div className="page-header">
+                     <div>
+                         <div className="page-eyebrow">Financial Dashboard</div>
+                         <div className="page-title">Reports & ITR</div>
+                     </div>
+                 </div>
+                 <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+                     <div style={{ color: 'var(--text3)' }}>Compiling financial statements...</div>
+                 </div>
             </div>
         );
     }
 
     if (!report) {
         return (
-            <div className="empty-state">
-                <h3>No data available</h3>
-            </div>
+             <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+                 <div style={{ color: 'var(--text3)' }}>No data available</div>
+             </div>
         );
     }
 
+    const getCategoryClass = (cat) => {
+        if (!cat) return 'tag';
+        const str = cat.toLowerCase();
+        if (str.includes('food') || str.includes('grocery')) return 'tag tag-green';
+        if (str.includes('electronics')) return 'tag tag-blue';
+        if (str.includes('health') || str.includes('pharmacy')) return 'tag tag-red';
+        return 'tag tag-gold';
+    };
+
     return (
         <div>
-            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="page-header">
                 <div>
-                    <h2>Reports & ITR</h2>
-                    <p>Advanced financial dashboard for Income Tax Return (ITR) estimates</p>
+                     <div className="page-eyebrow">Financial Dashboard</div>
+                     <div className="page-title">Reports & ITR</div>
                 </div>
-                <button className="btn btn-primary" onClick={exportITRPDF} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Export Statement (PDF)
-                </button>
-            </div>
-
-            <div className="stats-grid">
-                <div className="glass-card stat-card animate-in" style={{ borderTopColor: 'var(--accent-rose)' }}>
-                    <div className="stat-label">Total Expense / Purchases</div>
-                    <div className="stat-value" style={{ color: 'var(--accent-rose)' }}>₹{report.total_purchase_value?.toLocaleString()}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 8 }}>Based on extracted invoices</div>
-                </div>
-                <div className="glass-card stat-card animate-in" style={{ borderTopColor: 'var(--accent-indigo)' }}>
-                    <div className="stat-label">Estimated Input GST Credit (18%)</div>
-                    <div className="stat-value" style={{ color: 'var(--accent-indigo)' }}>₹{report.estimated_gst_input_credit?.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 8 }}>Potential GST savings</div>
-                </div>
-                <div className="glass-card stat-card animate-in" style={{ borderTopColor: 'var(--accent-teal)' }}>
-                    <div className="stat-label">Total Items Acquired</div>
-                    <div className="stat-value">{report.total_items_purchased?.toLocaleString()}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 8 }}>Across all suppliers</div>
+                <div className="page-actions">
+                    <button className="btn btn-gold" onClick={exportITRPDF} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export Statement
+                    </button>
                 </div>
             </div>
 
-            <div className="charts-grid" style={{ marginTop: 32 }}>
-                <div className="glass-card animate-in">
-                    <h3 style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-amber)' }}></span>
-                        Major Suppliers (Top Expenses)
-                    </h3>
-                    <div className="data-table-wrap">
-                        <table className="data-table">
+            <div className="grid3" style={{ marginBottom: '24px' }}>
+                <div className="metric-card">
+                    <div className="metric-label">Total Expense / Purchases</div>
+                    <div className="metric-val" style={{ color: 'var(--red)' }}>₹{report.total_purchase_value?.toLocaleString()}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: 8 }}>Based on extracted invoices</div>
+                </div>
+                <div className="metric-card">
+                    <div className="metric-label">Estimated Input GST Credit (18%)</div>
+                    <div className="metric-val" style={{ color: 'var(--gold)' }}>₹{report.estimated_gst_input_credit?.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: 8 }}>Potential GST savings</div>
+                </div>
+                <div className="metric-card">
+                    <div className="metric-label">Total Items Acquired</div>
+                    <div className="metric-val" style={{ color: 'var(--text)' }}>{report.total_items_purchased?.toLocaleString()}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: 8 }}>Across all suppliers</div>
+                </div>
+            </div>
+
+            <div className="grid2">
+                <div className="card">
+                    <div className="card-title">Major Suppliers (Top Expenses)</div>
+                    <div className="table-wrap">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Supplier</th>
@@ -88,8 +100,8 @@ export default function ReportsITR() {
                             <tbody>
                                 {report.supplier_breakdown?.slice(0, 10).map((sup, idx) => (
                                     <tr key={idx}>
-                                        <td>{sup.supplier}</td>
-                                        <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--accent-rose)' }}>
+                                        <td style={{ color: 'var(--text)', fontWeight: 500 }}>{sup.supplier}</td>
+                                        <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--red)', fontFamily: 'var(--font-mono)' }}>
                                             ₹{sup.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                         </td>
                                     </tr>
@@ -99,13 +111,10 @@ export default function ReportsITR() {
                     </div>
                 </div>
 
-                <div className="glass-card animate-in">
-                    <h3 style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-sky)' }}></span>
-                        Expenses by Category
-                    </h3>
-                    <div className="data-table-wrap">
-                        <table className="data-table">
+                <div className="card">
+                    <div className="card-title">Expenses by Category</div>
+                    <div className="table-wrap">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Category</th>
@@ -116,11 +125,11 @@ export default function ReportsITR() {
                                 {report.category_breakdown?.map((cat, idx) => (
                                     <tr key={idx}>
                                         <td>
-                                            <span className={`category-badge ${cat.category.toLowerCase().replace(/\s+/g, '-')}`}>
+                                            <span className={getCategoryClass(cat.category)}>
                                                 {cat.category}
                                             </span>
                                         </td>
-                                        <td style={{ textAlign: 'right', fontWeight: 600 }}>
+                                        <td style={{ textAlign: 'right', fontWeight: 600, fontFamily: 'var(--font-mono)', color: 'var(--text)' }}>
                                             ₹{cat.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                                         </td>
                                     </tr>
@@ -130,8 +139,6 @@ export default function ReportsITR() {
                     </div>
                 </div>
             </div>
-
-
         </div>
     );
 }

@@ -2,11 +2,11 @@ import React, { useState, useCallback } from 'react';
 import { uploadPaymentRecords, runReconciliation, getPaymentRecords } from '../api/client';
 
 const STATUS_CONFIG = {
-    matched: { color: '#566A7A', bg: 'rgba(86,106,122,0.1)', icon: '✅', label: 'Matched' },
-    mismatched: { color: '#8A9BAC', bg: 'rgba(138,155,172,0.1)', icon: '⚠️', label: 'Mismatched' },
-    missing_invoice: { color: '#4A4A4A', bg: 'rgba(74,74,74,0.08)', icon: '📄', label: 'Missing Invoice' },
-    missing_payment: { color: '#6D8196', bg: 'rgba(109,129,150,0.1)', icon: '💰', label: 'Missing Payment' },
-    duplicate: { color: '#7B8D9D', bg: 'rgba(123,141,157,0.1)', icon: '🔁', label: 'Duplicate' },
+    matched: { color: 'var(--green)', bg: 'rgba(46,196,160,0.1)', icon: '✅', label: 'Matched' },
+    mismatched: { color: 'var(--red)', bg: 'rgba(224,92,92,0.1)', icon: '⚠️', label: 'Mismatched' },
+    missing_invoice: { color: 'var(--gold)', bg: 'rgba(201,168,76,0.1)', icon: '📄', label: 'Missing Invoice' },
+    missing_payment: { color: 'var(--text)', bg: 'var(--navy3)', icon: '💰', label: 'Missing Payment' },
+    duplicate: { color: 'var(--text2)', bg: 'var(--navy4)', icon: '🔁', label: 'Duplicate' },
 };
 
 export default function ReconciliationPage() {
@@ -59,56 +59,45 @@ export default function ReconciliationPage() {
     return (
         <div>
             <div className="page-header">
-                <h2>🔍 Invoice Reconciliation</h2>
-                <p>Match invoices against expected payment records to detect mismatches, duplicates, and missing entries</p>
+                <div>
+                     <div className="page-eyebrow">Financial Tools</div>
+                     <div className="page-title">Invoice Reconciliation</div>
+                </div>
             </div>
 
             {/* Upload + Actions Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+            <div className="grid2" style={{ marginBottom: '24px' }}>
                 {/* Upload Payment Records */}
-                <div className="glass-card animate-in">
-                    <h3 style={{ color: 'var(--text-primary)', marginBottom: '1rem', fontSize: '1.1rem' }}>
-                        Upload Payment Records
-                    </h3>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                        Upload a CSV file with columns: <code style={{ color: '#6D8196', fontWeight: 600 }}>vendor, amount, date, reference</code>
+                <div className="card">
+                    <div className="card-title">Upload Payment Records</div>
+                    <p style={{ color: 'var(--text3)', fontSize: '13px', marginBottom: '16px' }}>
+                        Upload a CSV file with columns: <code style={{ color: 'var(--gold)' }}>vendor, amount, date, reference</code>
                     </p>
                     <label
                         htmlFor="payment-csv"
-                        style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            padding: '0.75rem 1.5rem', background: 'linear-gradient(135deg, #6D8196, #8A9BAC)',
-                            borderRadius: '10px', color: '#FFFFE3', fontWeight: '600', cursor: 'pointer',
-                            fontSize: '0.9rem', transition: 'opacity 0.2s',
-                            opacity: uploading ? 0.6 : 1,
-                        }}
+                        className="btn"
+                        style={{ cursor: 'pointer', opacity: uploading ? 0.6 : 1, display: 'inline-flex' }}
                     >
                         {uploading ? '⏳ Uploading...' : '📂 Choose CSV File'}
                         <input id="payment-csv" type="file" accept=".csv" onChange={handleFileUpload} style={{ display: 'none' }} disabled={uploading} />
                     </label>
-                    {uploadMsg && <p style={{ color: '#6D8196', marginTop: '0.75rem', fontSize: '0.9rem' }}>{uploadMsg}</p>}
-                    {paymentCount > 0 && <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', fontSize: '0.85rem' }}>
+                    {uploadMsg && <p style={{ color: 'var(--green)', marginTop: '12px', fontSize: '13px' }}>{uploadMsg}</p>}
+                    {paymentCount > 0 && <p style={{ color: 'var(--text3)', marginTop: '8px', fontSize: '12px' }}>
                         {paymentCount} payment records loaded
                     </p>}
                 </div>
 
                 {/* Run Reconciliation */}
-                <div className="glass-card animate-in" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                    <h3 style={{ color: 'var(--text-primary)', marginBottom: '1rem', fontSize: '1.1rem' }}>
-                        ⚡ Run Reconciliation
-                    </h3>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                    <div className="card-title">⚡ Run Reconciliation</div>
+                    <p style={{ color: 'var(--text3)', fontSize: '13px', marginBottom: '20px' }}>
                         Matches your uploaded invoices against payment records using fuzzy vendor matching and amount tolerance
                     </p>
                     <button
-                        className="btn btn-primary"
+                        className="btn btn-gold"
                         onClick={handleReconcile}
                         disabled={reconciling}
-                        style={{
-                            padding: '0.875rem 2.5rem', fontSize: '1rem',
-                            background: 'linear-gradient(135deg, #6D8196, #566A7A)',
-                            opacity: reconciling ? 0.6 : 1,
-                        }}
+                        style={{ opacity: reconciling ? 0.6 : 1, padding: '12px 24px' }}
                     >
                         {reconciling ? 'Analyzing...' : 'Run Reconciliation'}
                     </button>
@@ -117,100 +106,106 @@ export default function ReconciliationPage() {
 
             {/* Error */}
             {error && (
-                <div className="glass-card" style={{ background: 'rgba(74,74,74,0.06)', borderLeft: '4px solid #4A4A4A', marginBottom: '1.5rem' }}>
-                    <span style={{ color: '#4A4A4A' }}>{error}</span>
+                <div className="alert alert-red" style={{ marginBottom: '24px' }}>
+                    <span className="alert-icon">⚠</span>
+                    <span>{error}</span>
                 </div>
             )}
 
             {/* Report Summary */}
             {report && (
                 <>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '24px' }}>
                         {[
-                            { label: 'Invoices', value: report.total_invoices, icon: '', color: '#6D8196' },
-                            { label: 'Payments', value: report.total_payments, icon: '', color: '#8A9BAC' },
-                            { label: 'Matched', value: report.matched, icon: '', color: '#566A7A' },
-                            { label: 'Mismatched', value: report.mismatched, icon: '', color: '#7B8D9D' },
-                            { label: 'Missing Inv.', value: report.missing_invoices, icon: '', color: '#4A4A4A' },
-                            { label: 'Duplicates', value: report.duplicates, icon: '', color: '#5C6E7E' },
+                            { label: 'Invoices', value: report.total_invoices, icon: '📄', color: 'var(--text)' },
+                            { label: 'Payments', value: report.total_payments, icon: '💰', color: 'var(--text)' },
+                            { label: 'Matched', value: report.matched, icon: '✅', color: 'var(--green)' },
+                            { label: 'Mismatched', value: report.mismatched, icon: '⚠️', color: 'var(--red)' },
+                            { label: 'Missing Inv.', value: report.missing_invoices, icon: '🔍', color: 'var(--gold)' },
+                            { label: 'Duplicates', value: report.duplicates, icon: '🔁', color: 'var(--text2)' },
                         ].map((stat, i) => (
-                            <div key={i} className="glass-card animate-in" style={{ padding: '1.25rem', textAlign: 'center' }}>
-                                <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{stat.icon}</div>
-                                <div style={{ fontSize: '1.75rem', fontWeight: '700', color: stat.color }}>{stat.value}</div>
-                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>{stat.label}</div>
+                            <div key={i} className="metric-card" style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '20px', marginBottom: '8px' }}>{stat.icon}</div>
+                                <div className="metric-val" style={{ color: stat.color }}>{stat.value}</div>
+                                <div className="metric-label">{stat.label}</div>
                             </div>
                         ))}
                     </div>
 
                     {/* Amount Summary */}
-                    <div className="glass-card animate-in" style={{ marginBottom: '1.5rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div className="card" style={{ marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '16px' }}>
                             <div style={{ textAlign: 'center' }}>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Invoice Amount</div>
-                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#6D8196' }}>₹{report.total_invoice_amount?.toLocaleString()}</div>
+                                <div style={{ color: 'var(--text2)', fontSize: '12px', textTransform: 'uppercase' }}>Total Invoice Amount</div>
+                                <div style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text)', marginTop: '8px' }}>₹{report.total_invoice_amount?.toLocaleString()}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Payment Expected</div>
-                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#8A9BAC' }}>₹{report.total_payment_amount?.toLocaleString()}</div>
+                                <div style={{ color: 'var(--text2)', fontSize: '12px', textTransform: 'uppercase' }}>Total Payment Expected</div>
+                                <div style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text)', marginTop: '8px' }}>₹{report.total_payment_amount?.toLocaleString()}</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Discrepancy</div>
+                                <div style={{ color: 'var(--text2)', fontSize: '12px', textTransform: 'uppercase' }}>Discrepancy</div>
                                 <div style={{
-                                    fontSize: '1.5rem', fontWeight: '700',
-                                    color: report.amount_discrepancy === 0 ? '#566A7A' : '#4A4A4A'
+                                    fontSize: '24px', fontWeight: '600', marginTop: '8px',
+                                    color: report.amount_discrepancy === 0 ? 'var(--green)' : 'var(--red)'
                                 }}>₹{Math.abs(report.amount_discrepancy || 0).toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Detailed Results Table */}
-                    <div className="glass-card animate-in">
-                        <h3 style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>📊 Reconciliation Details</h3>
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                    <div className="card">
+                        <div className="card-title" style={{ marginBottom: '16px' }}>📊 Reconciliation Details</div>
+                        <div className="table-wrap">
+                            <table>
                                 <thead>
-                                    <tr style={{ borderBottom: '1px solid var(--border-glass)' }}>
-                                        {['Status', 'Invoice', 'Supplier/Vendor', 'Invoice Amt', 'Expected Amt', 'Difference', 'Confidence', 'Notes'].map(h => (
-                                            <th key={h} style={{ padding: '0.75rem 0.5rem', color: 'var(--text-muted)', fontWeight: '600', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
-                                        ))}
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Invoice</th>
+                                        <th>Supplier/Vendor</th>
+                                        <th>Invoice Amt</th>
+                                        <th>Expected Amt</th>
+                                        <th>Difference</th>
+                                        <th>Confidence</th>
+                                        <th>Notes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {report.items?.map((item, idx) => {
-                                        const cfg = STATUS_CONFIG[item.status] || { color: '#9A9A9A', bg: 'transparent', icon: '❓', label: item.status };
+                                        const cfg = STATUS_CONFIG[item.status] || { color: 'var(--text3)', bg: 'transparent', icon: '❓', label: item.status };
                                         return (
-                                            <tr key={idx} style={{ borderBottom: '1px solid rgba(74,74,74,0.06)' }}>
-                                                <td style={{ padding: '0.75rem 0.5rem' }}>
+                                            <tr key={idx}>
+                                                <td>
                                                     <span style={{
-                                                        display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
-                                                        padding: '0.25rem 0.75rem', borderRadius: '20px',
-                                                        background: cfg.bg, color: cfg.color, fontSize: '0.8rem', fontWeight: '600'
+                                                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                                        padding: '4px 8px', borderRadius: '4px',
+                                                        background: cfg.bg, color: cfg.color, fontSize: '11px', fontWeight: '600'
                                                     }}>
                                                         {cfg.icon} {cfg.label}
                                                     </span>
                                                 </td>
-                                                <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-secondary)' }}>
+                                                <td style={{ color: 'var(--text)' }}>
                                                     {item.invoice_filename || '—'}
                                                 </td>
-                                                <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-primary)' }}>
+                                                <td>
                                                     {item.invoice_supplier || item.payment_vendor || '—'}
                                                 </td>
-                                                <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-secondary)' }}>
+                                                <td style={{ fontFamily: 'var(--font-mono)' }}>
                                                     {item.invoice_amount ? `₹${item.invoice_amount.toLocaleString()}` : '—'}
                                                 </td>
-                                                <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-secondary)' }}>
+                                                <td style={{ fontFamily: 'var(--font-mono)' }}>
                                                     {item.payment_amount ? `₹${item.payment_amount.toLocaleString()}` : '—'}
                                                 </td>
                                                 <td style={{
-                                                    padding: '0.75rem 0.5rem', fontWeight: '600',
-                                                    color: item.amount_diff === 0 ? '#566A7A' : item.amount_diff > 0 ? '#8A9BAC' : '#4A4A4A'
+                                                    fontFamily: 'var(--font-mono)', fontWeight: '600',
+                                                    color: item.amount_diff === 0 ? 'var(--green)' : item.amount_diff > 0 ? 'var(--gold)' : 'var(--red)'
                                                 }}>
                                                     {item.amount_diff !== 0 ? `₹${item.amount_diff.toLocaleString()}` : '—'}
                                                 </td>
-                                                <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-muted)' }}>
+                                                <td>
                                                     {item.confidence > 0 ? `${Math.round(item.confidence * 100)}%` : '—'}
                                                 </td>
-                                                <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-muted)', maxWidth: '250px', fontSize: '0.8rem' }}>
+                                                <td style={{ maxWidth: '250px', fontSize: '12px' }}>
                                                     {item.notes}
                                                 </td>
                                             </tr>
@@ -219,7 +214,7 @@ export default function ReconciliationPage() {
                                 </tbody>
                             </table>
                             {(!report.items || report.items.length === 0) && (
-                                <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>
+                                <p style={{ textAlign: 'center', color: 'var(--text3)', padding: '32px' }}>
                                     No reconciliation items. Upload invoices and payment records first.
                                 </p>
                             )}
@@ -230,12 +225,12 @@ export default function ReconciliationPage() {
 
             {/* Empty State */}
             {!report && !error && (
-                <div className="glass-card animate-in" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}></div>
-                    <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Ready to Reconcile</h3>
-                    <p style={{ color: 'var(--text-muted)', maxWidth: '450px', margin: '0 auto' }}>
+                <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '16px' }}>⚖️</div>
+                    <div className="card-title" style={{ margin: '0 0 8px', textAlign: 'center' }}>Ready to Reconcile</div>
+                    <div style={{ color: 'var(--text3)', maxWidth: '450px', margin: '0 auto', fontSize: '14px', lineHeight: 1.5 }}>
                         Upload your payment records CSV, then click "Run Reconciliation" to match them against your uploaded invoices.
-                    </p>
+                    </div>
                 </div>
             )}
         </div>
