@@ -1,97 +1,73 @@
-"""Supabase database client wrapper."""
+"""Prisma sqlite database wrapper."""
 import os
 import json
 from dotenv import load_dotenv
+from prisma import Prisma
 
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+db = Prisma()
+db.connect()
+print("✅ Connected to Prisma SQLite")
 
-_supabase_client = None
-_use_local = False
-_local_invoices: list[dict] = []
-_local_products: list[dict] = []
-
-
-def _get_client():
-    """Get or create Supabase client, fallback to local storage."""
-    global _supabase_client, _use_local
-    if _supabase_client is not None:
-        return _supabase_client
-    if not SUPABASE_URL or not SUPABASE_KEY or SUPABASE_URL == "https://your-project.supabase.co":
-        print("⚠️  Supabase not configured — using in-memory storage for demo")
-        _use_local = True
-        return None
-    try:
-        from supabase import create_client
-        _supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
-        print("✅ Connected to Supabase")
-        return _supabase_client
-    except Exception as e:
-        print(f"⚠️  Supabase connection failed: {e} — using in-memory storage")
-        _use_local = True
-        return None
 
 
 def insert_invoice(data: dict, user_id: str = None) -> dict:
     """Insert an invoice record."""
-    import uuid
-    client = _get_client()
     if user_id:
         data["user_id"] = user_id
-    if _use_local or client is None:
-        record = {**data, "id": str(uuid.uuid4())}
-        _local_invoices.append(record)
-        return record
-    result = client.table("invoices").insert(data).execute()
-    return result.data[0] if result.data else data
+    res = db.invoice.create(data=data)
+    d = res.model_dump()
+    if hasattr(d.get("upload_date"), "isoformat"):
+        d["upload_date"] = d["upload_date"].isoformat()
+    return d
 
 
 def insert_products(products: list[dict], user_id: str = None) -> list[dict]:
     """Insert multiple product records."""
-    import uuid
-    client = _get_client()
     if user_id:
         for p in products:
             p["user_id"] = user_id
-    if _use_local or client is None:
-        records = []
-        for p in products:
-            record = {**p, "id": str(uuid.uuid4())}
-            _local_products.append(record)
-            records.append(record)
-        return records
-    result = client.table("products").insert(products).execute()
-    return result.data if result.data else products
+    records = []
+    for p in products:
+        # copy dict to avoid prisma mutating errors sometimes
+        d = dict(p)
+        res = db.product.create(data=d)
+        res_d = res.model_dump()
+        if hasattr(res_d.get("created_at"), "isoformat"):
+            res_d["created_at"] = res_d["created_at"].isoformat()
+        records.append(res_d)
+    return records
 
 
 def get_all_products(user_id: str = None) -> list[dict]:
     """Get all products."""
-    client = _get_client()
-    if _use_local or client is None:
-        if user_id:
-            return [p for p in _local_products if p.get("user_id") == user_id]
-        return _local_products
-    query = client.table("products").select("*")
+    query = {"order": {"created_at": "desc"}}
     if user_id:
-        query = query.eq("user_id", user_id)
-    result = query.order("created_at", desc=True).execute()
-    return result.data if result.data else []
+        query["where"] = {"user_id": user_id}
+    res = db.product.find_many(**query)
+    out = []
+    for r in res:
+        d = r.model_dump()
+        if hasattr(d.get("created_at"), "isoformat"):
+            d["created_at"] = d["created_at"].isoformat()
+        out.append(d)
+    return out
 
 
 def get_all_invoices(user_id: str = None) -> list[dict]:
     """Get all invoices."""
-    client = _get_client()
-    if _use_local or client is None:
-        if user_id:
-            return [i for i in _local_invoices if i.get("user_id") == user_id]
-        return _local_invoices
-    query = client.table("invoices").select("*")
+    query = {"order": {"upload_date": "desc"}}
     if user_id:
-        query = query.eq("user_id", user_id)
-    result = query.order("upload_date", desc=True).execute()
-    return result.data if result.data else []
+        query["where"] = {"user_id": user_id}
+    res = db.invoice.find_many(**query)
+    out = []
+    for r in res:
+        d = r.model_dump()
+        if hasattr(d.get("upload_date"), "isoformat"):
+            d["upload_date"] = d["upload_date"].isoformat()
+        out.append(d)
+    return out
 
 
 def get_dashboard_data(user_id: str = None) -> dict:
@@ -252,63 +228,47 @@ def seed_demo_data(user_id: str = None):
 # Payment Records (Reconciliation)
 # ──────────────────────────────────────────────
 
-_local_payment_records: list[dict] = []
-
-
 def insert_payment_records(records: list[dict], user_id: str = None) -> list[dict]:
     """Insert multiple payment records."""
-    import uuid
-    client = _get_client()
     if user_id:
         for r in records:
             r["user_id"] = user_id
-    if _use_local or client is None:
-        result = []
-        for r in records:
-            record = {**r, "id": str(uuid.uuid4())}
-            _local_payment_records.append(record)
-            result.append(record)
-        return result
-    result = client.table("payment_records").insert(records).execute()
-    return result.data if result.data else records
+    out = []
+    for r in records:
+        d = dict(r)
+        res = db.paymentrecord.create(data=d)
+        res_d = res.model_dump()
+        if hasattr(res_d.get("created_at"), "isoformat"):
+            res_d["created_at"] = res_d["created_at"].isoformat()
+        out.append(res_d)
+    return out
 
 
 def get_payment_records(user_id: str = None) -> list[dict]:
     """Get all payment records."""
-    client = _get_client()
-    if _use_local or client is None:
-        if user_id:
-            return [r for r in _local_payment_records if r.get("user_id") == user_id]
-        return _local_payment_records
-    query = client.table("payment_records").select("*")
+    query = {"order": {"created_at": "desc"}}
     if user_id:
-        query = query.eq("user_id", user_id)
-    result = query.order("created_at", desc=True).execute()
-    return result.data if result.data else []
+        query["where"] = {"user_id": user_id}
+    res = db.paymentrecord.find_many(**query)
+    out = []
+    for r in res:
+        d = r.model_dump()
+        if hasattr(d.get("created_at"), "isoformat"):
+            d["created_at"] = d["created_at"].isoformat()
+        out.append(d)
+    return out
 
 
 def update_payment_record(record_id: str, data: dict) -> dict:
     """Update a payment record."""
-    client = _get_client()
-    if _use_local or client is None:
-        for r in _local_payment_records:
-            if r.get("id") == record_id:
-                r.update(data)
-                return r
-        return data
-    result = client.table("payment_records").update(data).eq("id", record_id).execute()
-    return result.data[0] if result.data else data
+    res = db.paymentrecord.update(where={"id": record_id}, data=data)
+    return res.model_dump() if res else data
 
 
 def delete_payment_record(record_id: str, user_id: str = None) -> bool:
     """Delete a payment record."""
-    client = _get_client()
-    if _use_local or client is None:
-        global _local_payment_records
-        _local_payment_records = [r for r in _local_payment_records if r.get("id") != record_id]
-        return True
-    query = client.table("payment_records").delete().eq("id", record_id)
-    if user_id:
-        query = query.eq("user_id", user_id)
-    query.execute()
+    try:
+        db.paymentrecord.delete(where={"id": record_id})
+    except Exception:
+        pass
     return True

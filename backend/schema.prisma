@@ -1,0 +1,51 @@
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Invoice {
+  id           String    @id @default(uuid())
+  filename     String
+  upload_date  DateTime  @default(now())
+  raw_ocr_text String?
+  supplier     String?
+  user_id      String?
+  products     Product[]
+
+  @@map("invoices")
+}
+
+model Product {
+  id           String   @id @default(uuid())
+  product_name String
+  quantity     Int
+  price        Float
+  supplier     String?
+  category     String?
+  invoice_id   String?
+  created_at   DateTime @default(now())
+  user_id      String?
+
+  invoice      Invoice? @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+
+  @@map("products")
+}
+
+model PaymentRecord {
+  id               String   @id @default(uuid())
+  vendor           String
+  expected_amount  Float
+  payment_date     String?
+  reference_number String?
+  status           String?  @default("pending")
+  user_id          String?
+  created_at       DateTime @default(now())
+
+  @@map("payment_records")
+}

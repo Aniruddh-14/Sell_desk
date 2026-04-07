@@ -383,3 +383,4 @@ FinSight OCR empowers small retailers with enterprise-level AI intelligence, imp
 
 It transforms traditional retail stores into data-driven smart businesses.
 
+# Sell_desk

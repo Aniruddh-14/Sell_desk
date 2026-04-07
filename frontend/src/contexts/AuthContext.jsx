@@ -1,37 +1,21 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../api/supabaseClient';
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Check active sessions and sets the user
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
-
-        // Listen for changes on auth state (in, out, etc.)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
+    // Stubbed user for dev without Supabase
+    const [user, setUser] = useState({ id: 'local-user', email: 'admin@demo.com' });
 
     const value = {
-        signUp: (data) => supabase.auth.signUp(data),
-        signIn: (data) => supabase.auth.signInWithPassword(data),
-        signOut: () => supabase.auth.signOut(),
+        signUp: async (data) => console.log('Mock sign up', data),
+        signIn: async (data) => console.log('Mock sign in', data),
+        signOut: async () => console.log('Mock sign out'),
         user,
     };
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };
