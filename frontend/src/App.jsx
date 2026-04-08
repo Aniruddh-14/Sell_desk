@@ -140,10 +140,10 @@ function MainApp() {
         <div className="app-layout">
             <div className="topbar">
                 <div className="logo-wrap">
-                    <div className="logo-mark">BP</div>
+                    <div className="logo-mark">SD</div>
                     <div>
-                        <div className="logo-text">BillSmart Pro</div>
-                        <div className="logo-sub">CLASSIC BUSINESS CONSOLE</div>
+                        <div className="logo-text">SellDesk</div>
+                        <div className="logo-sub">SMART RETAIL INTELLIGENCE</div>
                     </div>
                 </div>
                 <div className="topbar-right">

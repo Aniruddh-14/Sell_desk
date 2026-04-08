@@ -132,12 +132,12 @@ export default function CalendarPage() {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setSelectedDate(isSelected ? null : day)}
                                     style={{
-                                        position: 'relative', padding: '16px 4px', border: 'none', borderRadius: '8px',
+                                        position: 'relative', padding: '16px 4px', borderRadius: '8px',
                                         background: isSelected ? 'var(--gold)' : isToday ? 'var(--navy4)' : 'var(--card)',
                                         color: isSelected ? 'var(--navy)' : isToday ? 'var(--gold)' : 'var(--text2)',
                                         cursor: 'pointer', fontSize: '14px', fontWeight: isToday ? 700 : 500,
                                         fontFamily: 'var(--font-heading)', transition: 'background 0.15s',
-                                        border: isToday ? '1px solid var(--gold-border)' : '1px solid var(--border)'
+                                        border: isSelected ? '1px solid var(--gold)' : isToday ? '1px solid var(--gold-border)' : '1px solid var(--border)'
                                     }}
                                 >
                                     {day}

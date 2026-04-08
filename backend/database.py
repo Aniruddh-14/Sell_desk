@@ -25,6 +25,7 @@ def insert_invoice(data: dict, user_id: str = None) -> dict:
 
 def insert_products(products: list[dict], user_id: str = None) -> list[dict]:
     """Insert multiple product records."""
+    import datetime as dt
     if user_id:
         for p in products:
             p["user_id"] = user_id
@@ -32,6 +33,16 @@ def insert_products(products: list[dict], user_id: str = None) -> list[dict]:
     for p in products:
         # copy dict to avoid prisma mutating errors sometimes
         d = dict(p)
+        # Prisma needs relation connect for foreign keys
+        invoice_id = d.pop("invoice_id", None)
+        if invoice_id:
+            d["invoice"] = {"connect": {"id": invoice_id}}
+        # Convert created_at string to datetime if present
+        if isinstance(d.get("created_at"), str):
+            try:
+                d["created_at"] = dt.datetime.fromisoformat(d["created_at"])
+            except (ValueError, TypeError):
+                d.pop("created_at", None)
         res = db.product.create(data=d)
         res_d = res.model_dump()
         if hasattr(res_d.get("created_at"), "isoformat"):
@@ -205,7 +216,6 @@ def seed_demo_data(user_id: str = None):
     invoice_id = str(uuid.uuid4())
     insert_invoice({
         "filename": "demo_invoice.pdf",
-        "upload_date": datetime.datetime.now().isoformat(),
         "raw_ocr_text": "Demo data — seeded for hackathon presentation",
         "supplier": "Multiple Suppliers",
     }, user_id=user_id)

@@ -97,7 +97,6 @@ async def upload_invoice(
             # Still save the invoice record even with no products
             invoice = insert_invoice({
                 "filename": file.filename,
-                "upload_date": datetime.datetime.now().isoformat(),
                 "raw_ocr_text": raw_text,
                 "supplier": "Unknown",
             }, user_id=user_id)
@@ -112,7 +111,6 @@ async def upload_invoice(
         # Store invoice
         invoice = insert_invoice({
             "filename": file.filename,
-            "upload_date": datetime.datetime.now().isoformat(),
             "raw_ocr_text": raw_text,
             "supplier": products[0].get("supplier", "Unknown") if products else "Unknown",
         }, user_id=user_id)

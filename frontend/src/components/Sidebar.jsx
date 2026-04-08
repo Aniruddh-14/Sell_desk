@@ -30,7 +30,6 @@ export default function Sidebar({ activeTab, onTabChange, dashData }) {
                     className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
                     onClick={() => onTabChange(item.id)}
                 >
-                    <span className="nav-num">{item.num}</span>
                     <span className="nav-icon">{item.icon}</span> 
                     {item.label}
                 </div>

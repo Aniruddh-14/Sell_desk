@@ -12,6 +12,7 @@ export default function GenerateInvoice() {
     const [nameInput, setNameInput] = useState('');
     const [qtyInput, setQtyInput] = useState(1);
     const [priceInput, setPriceInput] = useState('');
+    const [billNumber, setBillNumber] = useState('');
 
     const handleAddItem = (e) => {
         e.preventDefault();
@@ -39,6 +40,12 @@ export default function GenerateInvoice() {
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const handleDialpad = (val) => {
+        if (val === 'C') { setBillNumber(''); return; }
+        if (val === '⌫') { setBillNumber(prev => prev.slice(0, -1)); return; }
+        setBillNumber(prev => prev + val);
     };
 
     return (
@@ -141,7 +148,33 @@ export default function GenerateInvoice() {
 
                 {/* ── Right Action Column ── */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                     <button className="btn btn-green" onClick={handlePrint} disabled={items.length === 0} style={{ padding: '16px', fontSize: '14px' }}>
+                    {/* ── Bill Number Dialpad ── */}
+                    <div className="card" style={{ padding: '16px' }}>
+                        <div className="card-title">Bill Number</div>
+                        <div style={{
+                            background: 'var(--navy3)', border: '1px solid var(--border2)',
+                            borderRadius: '8px', padding: '12px 14px', marginBottom: '12px',
+                            fontFamily: 'var(--font-mono)', fontSize: '22px', fontWeight: 600,
+                            color: billNumber ? 'var(--gold)' : 'var(--text3)',
+                            letterSpacing: '2px', textAlign: 'center', minHeight: '48px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            {billNumber || 'Enter Bill #'}
+                        </div>
+                        <div className="keypad-grid">
+                            {['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k => (
+                                <button
+                                    key={k}
+                                    className={`key ${k === 'C' || k === '⌫' ? 'key-action' : ''}`}
+                                    onClick={() => handleDialpad(k)}
+                                >
+                                    {k}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button className="btn btn-green" onClick={handlePrint} disabled={items.length === 0} style={{ padding: '16px', fontSize: '14px' }}>
                         Print Receipt
                     </button>
                     <button className="btn" disabled={items.length === 0}>Send via SMS</button>
@@ -170,6 +203,7 @@ export default function GenerateInvoice() {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <h2 style={{ fontSize: '1.8rem', margin: '0 0 8px' }}>INVOICE</h2>
+                        {billNumber && <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 'bold' }}>Bill #: {billNumber}</p>}
                         <p style={{ margin: 0, fontSize: '0.9rem' }}>Date: {new Date().toLocaleDateString()}</p>
                         <p style={{ margin: 0, fontSize: '0.9rem' }}>Bill To: {customerName}</p>
                     </div>
