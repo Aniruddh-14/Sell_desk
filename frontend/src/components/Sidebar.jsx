@@ -21,7 +21,7 @@ export default function Sidebar({ activeTab, onTabChange, dashData }) {
     const billsProcessed = dashData?.daily_totals?.find(d => d.date === new Date().toISOString().split('T')[0])?.bill_count || 0;
 
     return (
-        <div className="sidebar">
+        <aside className="sidebar">
             <div className="sidebar-section-label">Navigation</div>
 
             {navItems.map((item) => (
@@ -30,10 +30,12 @@ export default function Sidebar({ activeTab, onTabChange, dashData }) {
                     className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
                     onClick={() => onTabChange(item.id)}
                 >
-                    <span className="nav-icon">{item.icon}</span> 
-                    {item.label}
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-text">{item.label}</span>
                 </div>
             ))}
+
+            <div className="nav-divider" />
 
             <div className="sidebar-today">
                 <div className="today-label">Today</div>
@@ -47,13 +49,9 @@ export default function Sidebar({ activeTab, onTabChange, dashData }) {
                 </div>
                 <div className="today-row">
                     <span>Revenue</span>
-                    <span className="today-val">₹{todayRevenue.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="today-row">
-                    <span>Support</span>
-                    <span className="today-val gold">Priority</span>
+                    <span className="today-val green">₹{todayRevenue.toLocaleString('en-IN')}</span>
                 </div>
             </div>
-        </div>
+        </aside>
     );
 }

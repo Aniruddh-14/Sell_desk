@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
 /* ── Animation variants ── */
 const fadeUp = {
@@ -22,10 +23,11 @@ const floatAnim = {
 };
 
 export default function Auth() {
-    const { signIn, signUp } = useAuth();
+    const { signIn, signUp } = useContext(AuthContext);
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [storeType, setStoreType] = useState('Retail Store');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -39,7 +41,7 @@ export default function Auth() {
                 const { error } = await signIn({ email, password });
                 if (error) throw error;
             } else {
-                const { error } = await signUp({ email, password });
+                const { error } = await signUp({ email, password, storeType });
                 if (error) throw error;
                 const sign = await signIn({ email, password });
                 if (sign.error) throw sign.error;
@@ -54,7 +56,7 @@ export default function Auth() {
     return (
         <div style={{
             display: 'flex', minHeight: '100vh',
-            background: 'var(--navy2)',
+            background: 'linear-gradient(135deg, var(--blue-vivid) 0%, var(--blue-bright) 50%, var(--blue-sky) 100%)',
         }}>
             {/* ═══════════════════════════════════
                 LEFT — Tagline & Branding
@@ -75,7 +77,7 @@ export default function Auth() {
                     style={{
                         position: 'absolute', top: '12%', left: '8%',
                         width: 120, height: 120, borderRadius: '50%',
-                        background: 'radial-gradient(circle, var(--gold-dim) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, var(--blue-dim) 0%, transparent 70%)',
                         pointerEvents: 'none',
                     }}
                 />
@@ -98,7 +100,7 @@ export default function Auth() {
                         borderRadius: 16, display: 'flex',
                         alignItems: 'center', justifyContent: 'center',
                     }}>
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--blue-sky)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                     </div>
@@ -142,8 +144,8 @@ export default function Auth() {
                             animate={{ backgroundPosition: ['0% 50%', '200% 50%'] }}
                             transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
                             style={{
-                                color: 'var(--gold)',
-                                textShadow: '0 0 16px var(--gold-glow)'
+                                color: 'var(--blue-sky)',
+                                textShadow: '0 0 16px rgba(77, 163, 255, 0.4)'
                             }}
                         >
                             Analytics.
@@ -155,8 +157,9 @@ export default function Auth() {
                     variants={fadeUp}
                     custom={2}
                     style={{
-                        fontSize: '1.15rem', color: 'var(--text2)',
+                        fontSize: '1.15rem', color: 'var(--blue-deep)',
                         lineHeight: 1.7, maxWidth: 420, marginBottom: '2.5rem',
+                        fontWeight: 500,
                     }}
                 >
                     Extract, analyze, and reconcile invoices with AI-powered OCR.
@@ -172,10 +175,10 @@ export default function Auth() {
                     {['Gemini AI OCR', 'Auto Reconciliation', 'Smart Insights', 'ITR Reports'].map((tag) => (
                         <span key={tag} style={{
                             padding: '0.4rem 1rem', borderRadius: 24,
-                            background: 'var(--navy3)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--text)', fontSize: '0.82rem',
-                            fontWeight: 500, letterSpacing: '0.3px',
+                            background: 'var(--blue-deep)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            color: 'var(--white)', fontSize: '0.82rem',
+                            fontWeight: 600, letterSpacing: '0.3px',
                         }}>
                             {tag}
                         </span>
@@ -282,7 +285,7 @@ export default function Auth() {
                                     transition: 'border-color 0.2s, box-shadow 0.2s',
                                     boxSizing: 'border-box'
                                 }}
-                                onFocus={(e) => { e.target.style.borderColor = 'var(--gold)'; }}
+                                onFocus={(e) => { e.target.style.borderColor = 'var(--blue-sky)'; }}
                                 onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                                 placeholder="you@example.com"
                             />
@@ -309,16 +312,56 @@ export default function Auth() {
                                     transition: 'border-color 0.2s, box-shadow 0.2s',
                                     boxSizing: 'border-box'
                                 }}
-                                onFocus={(e) => { e.target.style.borderColor = 'var(--gold)'; }}
+                                onFocus={(e) => { e.target.style.borderColor = 'var(--blue-sky)'; }}
                                 onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                                 placeholder="••••••••"
                             />
                         </div>
 
+                        <AnimatePresence>
+                            {!isLogin && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    style={{ overflow: 'hidden' }}
+                                >
+                                    <div style={{ marginTop: '0.2rem' }}>
+                                        <label style={{
+                                            display: 'block', color: 'var(--text2)',
+                                            fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600,
+                                        }}>
+                                            Store Type
+                                        </label>
+                                        <select
+                                            value={storeType}
+                                            onChange={(e) => setStoreType(e.target.value)}
+                                            style={{
+                                                width: '100%', padding: '0.875rem 1rem',
+                                                background: 'var(--navy3)',
+                                                border: '1px solid var(--border)',
+                                                borderRadius: 8, color: 'var(--text)',
+                                                fontSize: '0.95rem', outline: 'none',
+                                                transition: 'border-color 0.2s, box-shadow 0.2s',
+                                                boxSizing: 'border-box'
+                                            }}
+                                            onFocus={(e) => { e.target.style.borderColor = 'var(--blue-sky)'; }}
+                                            onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
+                                        >
+                                            <option value="Retail Store">Retail Store</option>
+                                            <option value="Cafe / Restaurant">Cafe / Restaurant</option>
+                                            <option value="Supermarket">Supermarket</option>
+                                            <option value="Pharmacy">Pharmacy</option>
+                                        </select>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         <button
                             type="submit"
                             disabled={loading}
-                            className="btn btn-gold"
+                            className="btn btn-primary"
                             style={{
                                 width: '100%', padding: '0.875rem', marginTop: '0.5rem',
                                 fontSize: '1rem', fontWeight: 600,
@@ -335,7 +378,7 @@ export default function Auth() {
                         <button
                             onClick={() => { setIsLogin(!isLogin); setError(''); }}
                             style={{
-                                background: 'none', border: 'none', color: 'var(--gold)',
+                                background: 'none', border: 'none', color: 'var(--blue-sky)',
                                 fontSize: '0.9rem', cursor: 'pointer', fontWeight: 500,
                                 transition: 'color 0.2s',
                             }}

@@ -8,7 +8,7 @@ load_dotenv()
 
 db = Prisma()
 db.connect()
-print("✅ Connected to Prisma SQLite")
+print("✅ Connected to Prisma Database")
 
 
 

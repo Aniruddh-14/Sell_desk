@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import UploadInvoice from './components/UploadInvoice';
@@ -9,7 +9,11 @@ import GenerateInvoice from './components/GenerateInvoice';
 import ReportsITR from './components/ReportsITR';
 import ReconciliationPage from './components/ReconciliationPage';
 import CalendarPage from './components/CalendarPage';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import AdStudioPage from './components/AdStudioPage';
+import FranchiseHQPage from './components/FranchiseHQPage';
+import WebsiteBuilderPage from './components/WebsiteBuilderPage';
+import PricingPlansPage from './components/PricingPlansPage';
+import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import Auth from './components/Auth';
 import { getDashboard } from './api/client';
 
@@ -73,7 +77,7 @@ function generateNotifications(data) {
 }
 
 function MainApp() {
-    const { user, signOut } = useAuth();
+    const { user, signOut } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('dashboard');
     const [showNotifs, setShowNotifs] = useState(false);
     const [dashData, setDashData] = useState(null);
@@ -127,11 +131,10 @@ function MainApp() {
             case 'calendar': return <CalendarPage />;
             case 'insights': return <InsightsPanel />;
             case 'reports': return <ReportsITR />;
-            // Future Tabs placeholders
-            case 'ads': return <div className="page active"><div className="page-header"><div className="page-title">Ad Studio</div></div><div className="card">Ad Studio is coming soon...</div></div>;
-            case 'franchise': return <div className="page active"><div className="page-header"><div className="page-title">Franchise HQ</div></div><div className="card">Franchise HQ coming soon...</div></div>;
-            case 'website': return <div className="page active"><div className="page-header"><div className="page-title">Website Builder</div></div><div className="card">Website Builder coming soon...</div></div>;
-            case 'pricing': return <div className="page active"><div className="page-header"><div className="page-title">Pricing Plans</div></div><div className="card">Pricing Plans coming soon...</div></div>;
+            case 'ads': return <AdStudioPage />;
+            case 'franchise': return <FranchiseHQPage />;
+            case 'website': return <WebsiteBuilderPage />;
+            case 'pricing': return <PricingPlansPage />;
             default: return <Dashboard />;
         }
     };
@@ -143,105 +146,63 @@ function MainApp() {
                     <div className="logo-mark">SD</div>
                     <div>
                         <div className="logo-text">SellDesk</div>
-                        <div className="logo-sub">SMART RETAIL INTELLIGENCE</div>
+                        <div className="logo-sub">Smart Retail Intelligence</div>
                     </div>
                 </div>
+
+                <div className="topbar-center">
+                    <div className="top-badge green">
+                        <span className="status-dot" />
+                        Cloud Sync Active
+                    </div>
+                    <div className="top-badge blue">GST Ready</div>
+                </div>
+
                 <div className="topbar-right">
-                    <div className="top-badge green">☁ Cloud Sync Active</div>
-                    <div className="top-badge">GST Ready</div>
-                    <select id="store-select" style={{width:'auto',fontSize:'11px',padding:'5px 10px',background:'var(--navy3)',borderColor:'var(--border2)',color:'var(--text2)',borderRadius:'20px'}}>
-                        <option>Retail Store</option>
-                        <option>Cafe / Restaurant</option>
-                        <option>Supermarket</option>
-                        <option>Pharmacy</option>
-                    </select>
                     <div className="time-chip" id="live-clock">{currentTime}</div>
 
-                    {/* ── Bell Icon + Dropdown ── */}
-                    <div ref={notifRef} style={{ position: 'relative' }}>
+                    <div ref={notifRef} className="notif-wrap">
                         <button
+                            className={`notif-btn ${showNotifs ? 'active' : ''}`}
                             onClick={() => setShowNotifs(!showNotifs)}
-                            style={{
-                                position: 'relative', width: 34, height: 34, borderRadius: 8,
-                                background: showNotifs ? 'var(--navy3)' : 'var(--navy4)',
-                                border: '1px solid var(--border)', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                transition: 'all 0.2s', marginLeft: '10px'
-                            }}
                         >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={showNotifs ? 'var(--gold)' : 'var(--text3)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                             </svg>
                             {notifications.length > 0 && (
-                                <span style={{
-                                    position: 'absolute', top: -3, right: -3,
-                                    width: 16, height: 16, borderRadius: '50%',
-                                    background: 'var(--red)', color: '#fff',
-                                    fontSize: '0.6rem', fontWeight: 700,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                }}>
-                                    {notifications.length}
-                                </span>
+                                <span className="notif-dot">{notifications.length}</span>
                             )}
                         </button>
 
-                        {/* ── Notification Dropdown Overlay ── */}
                         {showNotifs && (
-                            <div style={{
-                                position: 'absolute', top: 'calc(100% + 12px)', right: 0,
-                                width: 380, maxHeight: 480, overflowY: 'auto',
-                                background: 'var(--navy3)', borderRadius: 14,
-                                border: '1px solid var(--border)',
-                                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-                                zIndex: 1000, padding: '0',
-                                color: 'var(--text)'
-                            }}>
-                                <div style={{
-                                    padding: '1rem 1.25rem', borderBottom: '1px solid var(--border)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                }}>
-                                    <span style={{ fontSize: '0.92rem', fontWeight: 600 }}>
-                                        Smart Inventory Alerts
-                                    </span>
-                                    <span style={{
-                                        padding: '2px 8px', borderRadius: 10,
-                                        background: 'var(--card2)',
-                                        fontSize: '0.72rem', fontWeight: 600, color: 'var(--text2)',
-                                    }}>
-                                        {notifications.length} new
-                                    </span>
+                            <div className="notif-dropdown">
+                                <div className="notif-header">
+                                    <span>Smart Inventory Alerts</span>
+                                    <span className="notif-count">{notifications.length} new</span>
                                 </div>
-                                <div style={{ padding: '0.5rem' }}>
+                                <div className="notif-list">
                                     {notifications.length === 0 ? (
-                                        <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text3)', fontSize: '0.88rem' }}>
+                                        <div className="notif-empty">
                                             All clear — no alerts right now
                                         </div>
                                     ) : notifications.map((n) => (
-                                        <div
-                                            key={n.id}
-                                            style={{
-                                                display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
-                                                padding: '0.85rem 0.75rem', borderRadius: 10,
-                                                background: 'var(--card)', border: '1px solid var(--border)',
-                                                marginBottom: 4, cursor: 'default'
-                                            }}
-                                        >
-                                            <div style={{
-                                                width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-                                                background: n.color + '20', display: 'flex',
-                                                alignItems: 'center', justifyContent: 'center',
-                                            }}>
-                                                <div style={{
-                                                    width: 8, height: 8, borderRadius: '50%', background: n.color,
-                                                }} />
+                                        <div key={n.id} className="notif-item">
+                                            <div
+                                                className="notif-icon"
+                                                style={{ background: `${n.color}20` }}
+                                            >
+                                                <div
+                                                    className="notif-icon-dot"
+                                                    style={{ background: n.color }}
+                                                />
                                             </div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-                                                    <span style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text)' }}>{n.title}</span>
-                                                    <span style={{ fontSize: '0.68rem', color: 'var(--text3)', flexShrink: 0, marginLeft: 8 }}>{n.time}</span>
+                                            <div className="notif-copy">
+                                                <div className="notif-item-head">
+                                                    <span className="notif-title">{n.title}</span>
+                                                    <span className="notif-time">{n.time}</span>
                                                 </div>
-                                                <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text2)', lineHeight: 1.5 }}>{n.body}</p>
+                                                <p className="notif-body">{n.body}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -249,20 +210,18 @@ function MainApp() {
                             </div>
                         )}
                     </div>
-                    
-                    <button
-                        className="btn btn-ghost"
-                        onClick={() => signOut()}
-                        style={{ marginLeft: '4px', padding: '6px 12px' }}
-                    >
+
+                    <button className="signout-btn" onClick={() => signOut()}>
                         Sign Out
                     </button>
                 </div>
             </div>
 
-            <Sidebar activeTab={activeTab} onTabChange={setActiveTab} dashData={dashData} />
-            <div className="main">
-                {renderPage()}
+            <div className="layout-shell">
+                <Sidebar activeTab={activeTab} onTabChange={setActiveTab} dashData={dashData} />
+                <div className="main">
+                    {renderPage()}
+                </div>
             </div>
         </div>
     );
