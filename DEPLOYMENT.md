@@ -14,13 +14,13 @@ Render is perfect for Python/FastAPI backends.
    - **Language:** `Python 3`
    - **Branch:** `main`
    - **Root Directory:** `backend`
-   - **Build Command:** `pip install -r requirements.txt`
+   - **Build Command:** `pip install -r requirements.txt && prisma py fetch && prisma generate`
    - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
 5. Click on **Environment Variables** (or Advanced) and add the following keys:
-   - `PYTHON_VERSION` set to `3.11.0`
-   - `SUPABASE_URL` set to `<your-supabase-url>`
-   - `SUPABASE_KEY` set to `<your-supabase-key>`
+   - `PYTHON_VERSION` set to `3.11.0` (or higher)
+   - `DATABASE_URL` set to `<your-aiven-postgres-url>` (e.g., `postgres://...`)
    - `GEMINI_API_KEY` set to `<your-gemini-key>`
+   - `GROQ_API_KEY` set to `<your-groq-key>`
 6. Click **Create Web Service**.
 7. Once the build finishes, Render will give you a public URL (e.g., `https://finsight-ocr-backend.onrender.com`).
    - **Copy this URL**, you will need it for the frontend!
