@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 from models import (
     ProductBase, ProductResponse, InvoiceResponse,
@@ -16,12 +17,12 @@ from models import (
 )
 from database import (
     insert_invoice, insert_products, get_all_products,
-    get_all_invoices, get_dashboard_data, seed_demo_data
+    get_all_invoices, get_dashboard_data, seed_demo_data, db
 )
 from ocr import extract_products_from_image_gemini, encode_image_bytes
 from gemini_insights import generate_insights
 from reports import generate_itr_report, generate_itr_pdf
-from auth_utils import get_current_user
+from auth_utils import get_current_user, hash_password, verify_password, create_jwt
 from fastapi import Depends
 
 
@@ -48,6 +49,69 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ──────────────────────────────────────────────
+# Auth Models
+# ──────────────────────────────────────────────
+
+class AuthRequest(BaseModel):
+    email: str
+    password: str
+    store_type: Optional[str] = "Retail Store"
+
+class AuthResponse(BaseModel):
+    token: str
+    user: dict
+
+
+# ──────────────────────────────────────────────
+# Auth Endpoints
+# ──────────────────────────────────────────────
+
+@app.post("/api/auth/signup", response_model=AuthResponse)
+async def signup(req: AuthRequest):
+    """Register a new user. Each user gets an isolated, empty workspace."""
+    # Check if user already exists
+    existing = db.user.find_unique(where={"email": req.email})
+    if existing:
+        raise HTTPException(409, "An account with this email already exists. Please sign in.")
+
+    # Create user with hashed password
+    hashed = hash_password(req.password)
+    user = db.user.create(data={
+        "email": req.email,
+        "hashed_password": hashed,
+        "store_type": req.store_type or "Retail Store",
+    })
+
+    # Generate JWT
+    token = create_jwt(user.id, user.email)
+    print(f"✅ New user registered: {user.email} (id={user.id})")
+
+    return AuthResponse(
+        token=token,
+        user={"id": user.id, "email": user.email, "store_type": user.store_type}
+    )
+
+
+@app.post("/api/auth/login", response_model=AuthResponse)
+async def login(req: AuthRequest):
+    """Sign in an existing user. Must have signed up first."""
+    user = db.user.find_unique(where={"email": req.email})
+    if not user:
+        raise HTTPException(401, "No account found with this email. Please sign up first.")
+
+    if not verify_password(req.password, user.hashed_password):
+        raise HTTPException(401, "Incorrect password.")
+
+    token = create_jwt(user.id, user.email)
+    print(f"✅ User logged in: {user.email} (id={user.id})")
+
+    return AuthResponse(
+        token=token,
+        user={"id": user.id, "email": user.email, "store_type": user.store_type}
+    )
 
 
 # ──────────────────────────────────────────────
