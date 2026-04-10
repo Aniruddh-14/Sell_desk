@@ -8,8 +8,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-    // Stub token since we removed Supabase
-    config.headers.Authorization = `Bearer local-dev-token`;
+    const token = localStorage.getItem('fin_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 

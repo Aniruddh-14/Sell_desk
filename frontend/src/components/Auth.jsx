@@ -24,17 +24,19 @@ const floatAnim = {
 
 export default function Auth() {
     const { signIn, signUp } = useContext(AuthContext);
-    const [isLogin, setIsLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [storeType, setStoreType] = useState('Retail Store');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [signupSuccess, setSignupSuccess] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setSignupSuccess('');
 
         try {
             if (isLogin) {
@@ -43,11 +45,13 @@ export default function Auth() {
             } else {
                 const { error } = await signUp({ email, password, storeType });
                 if (error) throw error;
-                const sign = await signIn({ email, password });
-                if (sign.error) throw sign.error;
+                // After successful signup, switch to login form
+                setSignupSuccess('Account created successfully! Please sign in.');
+                setIsLogin(true);
+                setPassword('');
             }
         } catch (err) {
-            setError(err.message);
+            setError(err.message || String(err));
         } finally {
             setLoading(false);
         }
@@ -241,6 +245,27 @@ export default function Auth() {
                         </motion.div>
                     </AnimatePresence>
 
+                    {/* Success message */}
+                    <AnimatePresence>
+                        {signupSuccess && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                style={{
+                                    background: 'rgba(34, 197, 94, 0.1)',
+                                    border: '1px solid rgba(34, 197, 94, 0.3)',
+                                    color: '#4ade80', padding: '0.75rem 1rem',
+                                    borderRadius: 8, marginBottom: '1.5rem',
+                                    fontSize: '0.9rem', textAlign: 'center',
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                {signupSuccess}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     {/* Error */}
                     <AnimatePresence>
                         {error && (
@@ -376,7 +401,7 @@ export default function Auth() {
                     {/* Toggle */}
                     <div style={{ textAlign: 'center', marginTop: '1.75rem' }}>
                         <button
-                            onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                            onClick={() => { setIsLogin(!isLogin); setError(''); setSignupSuccess(''); }}
                             style={{
                                 background: 'none', border: 'none', color: 'var(--blue-sky)',
                                 fontSize: '0.9rem', cursor: 'pointer', fontWeight: 500,
