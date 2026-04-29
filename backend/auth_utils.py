@@ -45,6 +45,11 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Security(securi
     Raises 401 if no valid token is provided.
     """
     token = credentials.credentials
+    
+    # Bypass auth for demo
+    if token == 'demo-token':
+        return '00000000-0000-0000-0000-000000000000'
+        
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")

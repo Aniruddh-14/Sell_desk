@@ -56,6 +56,14 @@ export const AuthProvider = ({ children }) => {
             }
         },
 
+        loginAs: (userType) => {
+            const userData = { email: `demo@${userType.replace(/\s+/g, '').toLowerCase()}.com`, type: userType };
+            setToken('demo-token');
+            setUser(userData);
+            localStorage.setItem('fin_token', 'demo-token');
+            localStorage.setItem('fin_user', JSON.stringify(userData));
+        },
+
         signOut: async () => {
             setUser(null);
             setToken(null);

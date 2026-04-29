@@ -22,39 +22,18 @@ const floatAnim = {
     transition: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
 };
 
+const userRoles = [
+    { id: 'cafe', label: 'Cafe', icon: '☕', desc: 'Manage your daily cafe inventory and track ingredients.' },
+    { id: 'stationary', label: 'Stationary', icon: '📓', desc: 'Keep track of notebooks, pens, and office supplies.' },
+    { id: 'pharmacy', label: 'Pharmacy', icon: '💊', desc: 'Track medicines, expiry dates, and prescriptions.' }
+];
+
 export default function Auth() {
-    const { signIn, signUp } = useContext(AuthContext);
-    const [isLogin, setIsLogin] = useState(false);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [storeType, setStoreType] = useState('Retail Store');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [signupSuccess, setSignupSuccess] = useState('');
+    const { loginAs } = useContext(AuthContext);
+    const [selectedRole, setSelectedRole] = useState(userRoles[0].label);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-        setSignupSuccess('');
-
-        try {
-            if (isLogin) {
-                const { error } = await signIn({ email, password });
-                if (error) throw error;
-            } else {
-                const { error } = await signUp({ email, password, storeType });
-                if (error) throw error;
-                // After successful signup, switch to login form
-                setSignupSuccess('Account created successfully! Please sign in.');
-                setIsLogin(true);
-                setPassword('');
-            }
-        } catch (err) {
-            setError(err.message || String(err));
-        } finally {
-            setLoading(false);
-        }
+    const handleEnter = () => {
+        loginAs(selectedRole);
     };
 
     return (
@@ -134,7 +113,7 @@ export default function Auth() {
                         transition={{ duration: 0.7, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                         style={{ display: 'inline-block' }}
                     >
-                        Invoice
+                        Retail
                     </motion.span>
                     <br />
                     {/* "Analytics." — shimmer gradient sweep */}
@@ -152,7 +131,7 @@ export default function Auth() {
                                 textShadow: '0 0 16px rgba(77, 163, 255, 0.4)'
                             }}
                         >
-                            Analytics.
+                            Intelligence.
                         </motion.span>
                     </motion.span>
                 </div>
@@ -204,10 +183,10 @@ export default function Auth() {
             </motion.div>
 
             {/* ═══════════════════════════════════
-                RIGHT — Sign In / Sign Up Form
+                RIGHT — Role Selection
             ═══════════════════════════════════ */}
             <div style={{
-                width: '480px', minWidth: '380px',
+                width: '480px', minWidth: '420px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: '2rem',
                 background: 'var(--navy)',
@@ -221,196 +200,95 @@ export default function Auth() {
                     style={{ width: '100%', maxWidth: '380px' }}
                 >
                     {/* Header */}
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={isLogin ? 'login' : 'signup'}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -12 }}
-                            transition={{ duration: 0.25 }}
-                            style={{ marginBottom: '2rem' }}
-                        >
-                            <h2 style={{
-                                fontSize: '1.75rem', fontWeight: 700,
-                                color: 'var(--text)', marginBottom: '0.5rem',
-                                fontFamily: 'var(--font-heading)'
-                            }}>
-                                {isLogin ? 'Welcome back' : 'Create account'}
-                            </h2>
-                            <p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>
-                                {isLogin
-                                    ? 'Enter your credentials to access FinSight-OCR'
-                                    : 'Sign up to start analyzing your invoices'}
-                            </p>
-                        </motion.div>
-                    </AnimatePresence>
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25 }}
+                        style={{ marginBottom: '2rem' }}
+                    >
+                        <h2 style={{
+                            fontSize: '1.75rem', fontWeight: 700,
+                            color: 'var(--text)', marginBottom: '0.5rem',
+                            fontFamily: 'var(--font-heading)'
+                        }}>
+                            Welcome to SellDesk
+                        </h2>
+                        <p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>
+                            Choose your workspace to enter
+                        </p>
+                    </motion.div>
 
-                    {/* Success message */}
-                    <AnimatePresence>
-                        {signupSuccess && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
+                    {/* Role Selection Options */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+                        {userRoles.map((role) => (
+                            <div
+                                key={role.id}
+                                onClick={() => setSelectedRole(role.label)}
                                 style={{
-                                    background: 'rgba(34, 197, 94, 0.1)',
-                                    border: '1px solid rgba(34, 197, 94, 0.3)',
-                                    color: '#4ade80', padding: '0.75rem 1rem',
-                                    borderRadius: 8, marginBottom: '1.5rem',
-                                    fontSize: '0.9rem', textAlign: 'center',
-                                    overflow: 'hidden',
+                                    padding: '1.25rem',
+                                    borderRadius: '12px',
+                                    background: selectedRole === role.label ? 'rgba(77, 163, 255, 0.1)' : 'var(--navy3)',
+                                    border: `1px solid ${selectedRole === role.label ? 'var(--blue-sky)' : 'var(--border)'}`,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem'
                                 }}
                             >
-                                {signupSuccess}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* Error */}
-                    <AnimatePresence>
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                style={{
-                                    background: 'var(--red-dim)',
-                                    border: '1px solid rgba(224,92,92,0.3)',
-                                    color: '#ff9a9a', padding: '0.75rem 1rem',
-                                    borderRadius: 8, marginBottom: '1.5rem',
-                                    fontSize: '0.9rem', textAlign: 'center',
-                                    overflow: 'hidden',
-                                }}
-                            >
-                                {error}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                        <div>
-                            <label style={{
-                                display: 'block', color: 'var(--text2)',
-                                fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600,
-                            }}>
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                style={{
-                                    width: '100%', padding: '0.875rem 1rem',
-                                    background: 'var(--navy3)',
+                                <div style={{
+                                    fontSize: '1.8rem',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    width: '48px', height: '48px',
+                                    background: 'var(--navy)',
+                                    borderRadius: '50%',
                                     border: '1px solid var(--border)',
-                                    borderRadius: 8, color: 'var(--text)',
-                                    fontSize: '0.95rem', outline: 'none',
-                                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                                    boxSizing: 'border-box'
-                                }}
-                                onFocus={(e) => { e.target.style.borderColor = 'var(--blue-sky)'; }}
-                                onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
-                                placeholder="you@example.com"
-                            />
-                        </div>
-
-                        <div>
-                            <label style={{
-                                display: 'block', color: 'var(--text2)',
-                                fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600,
-                            }}>
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                style={{
-                                    width: '100%', padding: '0.875rem 1rem',
-                                    background: 'var(--navy3)',
-                                    border: '1px solid var(--border)',
-                                    borderRadius: 8, color: 'var(--text)',
-                                    fontSize: '0.95rem', outline: 'none',
-                                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                                    boxSizing: 'border-box'
-                                }}
-                                onFocus={(e) => { e.target.style.borderColor = 'var(--blue-sky)'; }}
-                                onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
-                                placeholder="••••••••"
-                            />
-                        </div>
-
-                        <AnimatePresence>
-                            {!isLogin && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    style={{ overflow: 'hidden' }}
-                                >
-                                    <div style={{ marginTop: '0.2rem' }}>
-                                        <label style={{
-                                            display: 'block', color: 'var(--text2)',
-                                            fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600,
-                                        }}>
-                                            Store Type
-                                        </label>
-                                        <select
-                                            value={storeType}
-                                            onChange={(e) => setStoreType(e.target.value)}
-                                            style={{
-                                                width: '100%', padding: '0.875rem 1rem',
-                                                background: 'var(--navy3)',
-                                                border: '1px solid var(--border)',
-                                                borderRadius: 8, color: 'var(--text)',
-                                                fontSize: '0.95rem', outline: 'none',
-                                                transition: 'border-color 0.2s, box-shadow 0.2s',
-                                                boxSizing: 'border-box'
-                                            }}
-                                            onFocus={(e) => { e.target.style.borderColor = 'var(--blue-sky)'; }}
-                                            onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; }}
-                                        >
-                                            <option value="Retail Store">Retail Store</option>
-                                            <option value="Cafe / Restaurant">Cafe / Restaurant</option>
-                                            <option value="Supermarket">Supermarket</option>
-                                            <option value="Pharmacy">Pharmacy</option>
-                                        </select>
+                                }}>
+                                    {role.icon}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{
+                                        color: selectedRole === role.label ? 'var(--blue-sky)' : 'var(--text)',
+                                        fontWeight: 600, fontSize: '1.05rem', marginBottom: '0.25rem'
+                                    }}>
+                                        {role.label}
                                     </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="btn btn-primary"
-                            style={{
-                                width: '100%', padding: '0.875rem', marginTop: '0.5rem',
-                                fontSize: '1rem', fontWeight: 600,
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                opacity: loading ? 0.7 : 1,
-                            }}
-                        >
-                            {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
-                        </button>
-                    </form>
-
-                    {/* Toggle */}
-                    <div style={{ textAlign: 'center', marginTop: '1.75rem' }}>
-                        <button
-                            onClick={() => { setIsLogin(!isLogin); setError(''); setSignupSuccess(''); }}
-                            style={{
-                                background: 'none', border: 'none', color: 'var(--blue-sky)',
-                                fontSize: '0.9rem', cursor: 'pointer', fontWeight: 500,
-                                transition: 'color 0.2s',
-                            }}
-                        >
-                            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-                        </button>
+                                    <div style={{ color: 'var(--text3)', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                                        {role.desc}
+                                    </div>
+                                </div>
+                                {/* Radio/Check indicator */}
+                                <div style={{
+                                    width: '20px', height: '20px',
+                                    borderRadius: '50%',
+                                    border: `2px solid ${selectedRole === role.label ? 'var(--blue-sky)' : 'var(--border)'}`,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    background: selectedRole === role.label ? 'var(--blue-sky)' : 'transparent',
+                                }}>
+                                    {selectedRole === role.label && (
+                                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
+
+                    <button
+                        onClick={handleEnter}
+                        className="btn btn-primary"
+                        style={{
+                            width: '100%', padding: '1rem',
+                            fontSize: '1.05rem', fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem'
+                        }}
+                    >
+                        Enter Workspace
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
                 </motion.div>
             </div>
         </div>
