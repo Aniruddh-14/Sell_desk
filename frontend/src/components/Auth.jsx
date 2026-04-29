@@ -145,7 +145,7 @@ export default function Auth() {
                         fontWeight: 500,
                     }}
                 >
-                    Extract, analyze, and reconcile invoices with AI-powered OCR.
+                    Extract, analyze, and reconcile data seamlessly.
                     Built for modern retail businesses.
                 </motion.p>
 
@@ -155,7 +155,7 @@ export default function Auth() {
                     custom={3}
                     style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}
                 >
-                    {['Gemini AI OCR', 'Auto Reconciliation', 'Smart Insights', 'ITR Reports'].map((tag) => (
+                    {['AI Extraction', 'Auto Reconciliation', 'Smart Insights', 'ITR Reports'].map((tag) => (
                         <span key={tag} style={{
                             padding: '0.4rem 1rem', borderRadius: 24,
                             background: 'var(--blue-deep)',
@@ -167,19 +167,6 @@ export default function Auth() {
                         </span>
                     ))}
                 </motion.div>
-
-                {/* Bottom credit */}
-                <motion.p
-                    variants={fadeUp}
-                    custom={4}
-                    style={{
-                        marginTop: 'auto', paddingTop: '3rem',
-                        fontSize: '0.78rem', color: 'var(--text3)',
-                        letterSpacing: '0.5px',
-                    }}
-                >
-                    Powered by Gemini AI + vLLM OCR
-                </motion.p>
             </motion.div>
 
             {/* ═══════════════════════════════════

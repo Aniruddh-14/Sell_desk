@@ -40,7 +40,7 @@ export default function InsightsPanel() {
                     </div>
                 </div>
                 <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-                     <div style={{ color: 'var(--text3)' }}>Gemini is analyzing your data...</div>
+                     <div style={{ color: 'var(--text3)' }}>AI is analyzing your data...</div>
                 </div>
             </div>
         );
